@@ -5,19 +5,18 @@
 #include <string>
 #include <vector>
 
-using namespace std;
 
 class KPMPInstance {
 private: 
 	unsigned int K;
 	unsigned int numVertices;
-	vector<vector<unsigned int> > adjacencyList;
+	std::vector<std::vector<unsigned int> > adjacencyList;
 	bool **adjacencyMatrix;
 
 	KPMPInstance(){}
 
 public:
-	static KPMPInstance* readInstance(string filename);
+	static KPMPInstance* readInstance(std::string filename);
 
 	~KPMPInstance() {
 		for(unsigned i = 0; i < numVertices; i++)
@@ -33,7 +32,7 @@ public:
 		return numVertices;
 	}
 
-	vector<vector<unsigned int> > getAdjacencyList() const {
+	std::vector<std::vector<unsigned int> > getAdjacencyList() const {
 		return adjacencyList;
 	}
 

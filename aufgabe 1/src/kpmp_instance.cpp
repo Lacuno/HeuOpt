@@ -4,6 +4,8 @@
 #include "kpmp_instance.h"
 #include "kpmp_solution_writer.h"
 
+using namespace std;
+
 KPMPInstance* KPMPInstance::readInstance(string filename) {
 	// read in instance
 	KPMPInstance* instance = new KPMPInstance();
