@@ -26,3 +26,9 @@
 *.exe
 *.out
 *.app
+
+# Build dir
+build/
+
+# Swap
+*.swp
