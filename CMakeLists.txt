@@ -5,7 +5,8 @@ cmake_minimum_required (VERSION 2.8.11)
 project (HeuOpt)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+file(GLOB SOURCE_FILES "src/aufgabe1/*.h" "src/aufgabe1/*.cpp")
 
-#target_include_directories (HeuOpt PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/../lib")
-add_executable (heuopt_ex1 main.cpp kpmp_instance.cpp kpmp_solution_writer.cpp kpmp_solution.cpp)
-#target_link_libraries (HeuOpt LINK_PUBLIC heuopt_ex1)UX_SOURCE_DIRECTORY
+include_directories(${CMAKE_SOURCE_DIR}/framework)
+	
+add_executable (heuopt_ex1 ${SOURCE_FILES})
