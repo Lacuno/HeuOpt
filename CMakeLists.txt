@@ -4,8 +4,13 @@
 cmake_minimum_required (VERSION 2.8.11)
 project (HeuOpt)
 
+file(COPY "instances/" DESTINATION "instances/")
+
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-file(GLOB SOURCE_FILES "src/aufgabe1/*.h" "src/aufgabe1/*.cpp")
+file(GLOB SOURCE_FILES "src/aufgabe1/*.h" 
+					   "src/aufgabe1/*.cpp" 
+					   "${CMAKE_SOURCE_DIR}/framework/*.cpp" 
+					   "${CMAKE_SOURCE_DIR}/framework/*.h")
 
 include_directories(${CMAKE_SOURCE_DIR}/framework)
 	
