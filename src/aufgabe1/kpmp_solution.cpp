@@ -42,37 +42,30 @@ uint KPMPSolution::computeCrossings() {
 	uint crossings = 0;
 
 	auto isCrossing = [&](Edge& e1, Edge& e2) {
-		pair<uint, uint> o1 = { ordering.at(e1.first), ordering.at(e1.second) };
-		pair<uint, uint> o2 = { ordering.at(e2.first), ordering.at(e2.second) };
 
-		uint o1_max = std::max(o1.first, o1.second);
-		uint o1_min = std::min(o1.first, o1.second);
-		uint o2_max = std::max(o2.first, o2.second);
-		uint o2_min = std::min(o2.first, o2.second);
+		//pair<uint, uint> o1 = e1;// { ordering.at(e1.first), ordering.at(e1.second) };
+		//pair<uint, uint> o2 = e2;// { ordering.at(e2.first), ordering.at(e2.second) };
 
-		// is the min vertex of edge 2 inside the vertices of edge 1
-		if (o1_min > o2_min && o1_min < o2_max) {
-			// is the max vertex of edge 2 outside the vertices of edge 1
-			if (o1_max < o2_min || o1_max > o2_max) {
-				return true;
-			}
-		}
-		else if(o2_min < o1_min) {
-			// min vertex of edge 2 is outside the vertices of edge 1
+		uint o1_max = std::max(e1.first, e1.second);
+		uint o1_min = std::min(e1.first, e1.second);
+		uint o2_max = std::max(e2.first, e2.second);
+		uint o2_min = std::min(e2.first, e2.second);
 
-			// is the max vertex of edge 2 inside the vertices of edge 1?
-			if (o1_max > o2_min && o1_max < o2_max) {
-				return true;
-			}
-		}
+		// entire intervals not overlapping?
+		if (o1_max <= o2_min || o2_max <= o1_min)
+			return false;
 
-		return false;
+		// entire interval inside the other?
+		if (o1_min >= o2_min && o1_max <= o2_max
+			|| o2_min >= o1_min && o2_max <= o1_max)
+			return false;
+
+		return true;
 	};
 
 	for (uint i = 0; i < k; i++) {
 		const auto& edges = pageToEdges.at(i);
 
-		std::cout << "found edges: " << edges.size() << std::endl;
 		for (auto iterator1 = edges.begin(); iterator1 != edges.end(); ++iterator1) {
 			for (auto iterator2 = iterator1 + 1; iterator2 != edges.end(); ++iterator2) {
 				Edge edge1 = *iterator1;
