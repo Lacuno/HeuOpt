@@ -6,7 +6,10 @@
 
 class GreedyConstruction : public ConstructionHeuristic {
     public:
-	virtual std::shared_ptr<KPMPSolution> construct(KPMPInstance &instance);
+//<<<<<<< HEAD
+//	virtual std::shared_ptr<KPMPSolution> construct(KPMPInstance &instance);
+//=======
+	virtual std::shared_ptr<KPMPSolution> construct(std::string instanceName);
 };
 
 #endif /* GREEDY_CONSTRUCTION_H_ */

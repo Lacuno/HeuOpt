@@ -2,50 +2,45 @@
 #include <memory>
 #include "kpmp_instance.h"
 #include "kpmp_solution.h"
+#include "kpmp_solution_writer.h"
 #include "constructionheuristic.h"
 #include "greedyconstruction.h"
 #include "utils.h"
 
 int main()
 {	
-	std::cout << "Reading instance" << std::endl;
-	Utils::startTimeMeasurement();
-	const auto instance = std::unique_ptr<KPMPInstance>(KPMPInstance::readInstance("instances/automatic-6.txt"));
+//	std::cout << "Reading instance" << std::endl;
+//	Utils::startTimeMeasurement();
+//	const auto instance = std::unique_ptr<KPMPInstance>(KPMPInstance::readInstance("instances/automatic-6.txt"));
+//	double secondsneeded = Utils::endTimeMeasurement();
+//	std::cout << "Reading complete in " << secondsneeded << " seconds" << std::endl;
 	GreedyConstruction gc;
-	gc.construct(*instance);
-	double secondsneeded = Utils::endTimeMeasurement();
-	std::cout << "Reading complete in " << secondsneeded << " seconds" << std::endl;
+
+	for (char i = 1; i <= 10; i++) {
+		std::string instanceName("instances/automatic-" + std::to_string(i) + ".txt");
+
+		const auto& sol = gc.construct(instanceName);
 
 
-	const auto adjacencyMatrix = instance->getAdjacencyMatrix();
-	const unsigned int numVertices = instance->getNumVertices();
-	const unsigned int k = instance->getK();
+		// write solution
+		std::cout << "Writing solution..." << std::endl;
 
-	KPMPSolution sol(k, numVertices);
-	std::cout << "Filling solution with data" << std::endl;
-	Utils::startTimeMeasurement();
+		KPMPSolutionWriter solutionWriter(sol->getK());
+		solutionWriter.setSpineOrder(sol->getOrdering());
 
-	unsigned int edgeNum = 0;
+		for (unsigned int p = 0; p < sol->getK(); p++) {
+			const auto& edges = sol->getEdgesFromPage(p);
 
-	for (unsigned int i = 0; i < numVertices; i++) {
-		for (unsigned int j = i; j < numVertices; j++) {
-			if(adjacencyMatrix[i][j]) {
-				sol.addEdge({ i, j });
-				edgeNum++;
+			for (const auto& edge : edges) {
+				solutionWriter.addEdgeOnPage(edge.v1, edge.v2, p);
 			}
 		}
+
+		solutionWriter.write("instances/result-" + std::to_string(i) + ".txt");
+		std::cout << "Done!" << std::endl;
+
+		std::cout << std::endl;
 	}
-
-	secondsneeded = Utils::endTimeMeasurement();
-	std::cout << "Filling solution with data complete in " << secondsneeded << " seconds" << std::endl;
-   
-	Utils::startTimeMeasurement();
-
-
-	std::cout << "computing crossings..." << std::endl; 
-	std::cout << sol.computeCrossings() << std::endl;
-	secondsneeded = Utils::endTimeMeasurement();
-	std::cout << "Done: " << secondsneeded << " seconds needed" << std::endl;
 
 	return 0; 
 }

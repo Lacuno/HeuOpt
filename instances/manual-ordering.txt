@@ -1,0 +1,12 @@
+# category: manual
+# problem: 1
+5
+1
+0
+1
+2
+3
+4
+0 2 [0] # 2 overlaps
+3 1 [0]
+4 2 [0]

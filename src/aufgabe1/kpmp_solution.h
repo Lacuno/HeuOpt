@@ -15,23 +15,34 @@ struct Edge {
 };
 
 class KPMPSolution {
-    private:
-    	uint k;
-		uint numVertices;
-		std::unordered_map<uint, uint> ordering; // new ordering (e.g. 2,1,3) -> basic ordering (e.g. 1,2,3)
-		std::unordered_map<uint, std::vector<Edge>> pageToEdges;
-
-		void normalizeEdge(Edge& e);
-
     public:
 		KPMPSolution(uint k, uint numVertices);
         
 		std::vector<Edge> getEdgesFromPage(uint p);
+		// the edge must not be in the graph yet! this is not checked!
 		void addEdge(Edge e, bool orderingIncluded = true);
-		void removeEdge(Edge e);
-		void setOrdering(std::vector<uint> newOrdering);
+		// the edge must be in the graph yet! this is not checked!
+		void removeEdge(Edge e, bool orderingIncluded = true);
+		void setOrdering(std::vector<uint> ordering);
 
-		uint computeCrossings(); 
+		uint getCrossings(); 
+		std::vector<uint> getOrdering();
+		uint getK();
+
+	private:
+		uint k;
+		uint numVertices;
+		uint crossings;
+
+		std::vector<uint> vertexToPosition;
+		std::vector<uint> positionToVertex;
+		std::unordered_map<uint, std::vector<Edge>> pageToEdges;
+
+		void normalizeEdge(Edge& e);
+
+		bool isCrossing(Edge& e1, Edge &e2);
+		uint computeEdgeCrossings(Edge &e);
+		void recomputeCrossings();
 };
 
 #endif /* INSTANCE_SOLUTION_H_ */
