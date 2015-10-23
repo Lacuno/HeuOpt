@@ -26,6 +26,7 @@ class KPMPSolution {
 
 		uint getCrossings(); 
 		std::vector<uint> getOrdering();
+		uint getK();
 
 	private:
 		uint k;

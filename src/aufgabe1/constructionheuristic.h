@@ -3,11 +3,12 @@
 
 #include <memory>
 #include "kpmp_solution.h"
+#include "kpmp_instance.h"
 
 class ConstructionHeuristic {
     public:
 	virtual ~ConstructionHeuristic() { }
-	virtual std::shared_ptr<KPMPSolution> construct() = 0;
+	virtual std::shared_ptr<KPMPSolution> construct(std::string instanceName) = 0;
 };
 
 #endif /* CONSTRUCTION_HEURISTIC_H */

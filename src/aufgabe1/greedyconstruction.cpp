@@ -1,10 +1,82 @@
+#include <iostream>
+#include <deque>
+#include "utils.h"
 #include "greedyconstruction.h"
 
 using namespace std;
 
-shared_ptr<KPMPSolution> GreedyConstruction::construct() {
-	shared_ptr<KPMPSolution> p(new KPMPSolution(1,1));
-	return p;
+shared_ptr<KPMPSolution> GreedyConstruction::construct(std::string instanceName) {
+	std::cout << ">>>> Reading instance: " << instanceName << std::endl;
+	Utils::startTimeMeasurement();
+	const auto instance = std::unique_ptr<KPMPInstance>(KPMPInstance::readInstance(instanceName));
+	double secondsneeded = Utils::endTimeMeasurement();
+	std::cout << "Reading complete in " << secondsneeded << " seconds" << std::endl;
+
+	const auto adjacencyMatrix = instance->getAdjacencyMatrix();
+	const unsigned int numVertices = instance->getNumVertices();
+	const unsigned int k = instance->getK();
+
+	shared_ptr<KPMPSolution> solution(new KPMPSolution(k, numVertices));
+
+	std::cout << "Constructing..." << std::endl;
+	Utils::startTimeMeasurement();
+
+	// create the ordering
+	std::vector<unsigned int> ordering;
+
+	// add all vertices to a deque
+	std::deque<unsigned int> vertices;
+	for (int i = 0; i < numVertices; i++) {
+		vertices.push_back(i);
+	}
+
+	// add the first vertex into the ordering
+	ordering.push_back(vertices.front());
+	vertices.pop_front();
+
+	// do while there are vertices left
+	while(!vertices.empty()) {
+		unsigned int v1 = ordering.back();
+		int ind = -1;
+
+		// 1. pick a vertex v that is connected to the last vertex v_l (iterate ascending / random)
+		for (unsigned int i = 0; i < vertices.size(); i++) {
+			if (adjacencyMatrix[v1][vertices[i]]) {
+				ind = i;
+				break;
+			}
+		}
+
+		// v does not exist - place the next free vertex (or random?)
+		if (ind == -1) {
+			ordering.push_back(vertices.back());
+			vertices.pop_back();
+		}
+		else {
+			// v exists - place it after v_l
+			ordering.push_back(vertices[ind]);
+			vertices.erase(vertices.begin() + ind);
+		}
+	}
+
+	// add all edges to the solution
+	for (unsigned int i = 0; i < numVertices; i++) {
+		for (unsigned int j = i; j < numVertices; j++) {
+			if (adjacencyMatrix[i][j]) {
+				solution->addEdge({ i, j, 0 }, true);
+			}
+		}
+	}
+
+	std::cout << "Crossings without ordering: " << solution->getCrossings() << std::endl;
+	solution->setOrdering(ordering);
+	std::cout << "Crossings with ordering: " << solution->getCrossings() << std::endl;
+	
+	secondsneeded = Utils::endTimeMeasurement();
+	std::cout << "Done in " << secondsneeded << " seconds" << std::endl;
+
+	
+	return solution;
 }
 
 

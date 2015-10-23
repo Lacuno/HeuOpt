@@ -85,6 +85,10 @@ std::vector<uint> KPMPSolution::getOrdering() {
 	return vertexToPosition;
 }
 
+uint KPMPSolution::getK() {
+	return k;
+}
+
 void KPMPSolution::normalizeEdge(Edge& e)
 {
 	if (e.v1 > e.v2) {
