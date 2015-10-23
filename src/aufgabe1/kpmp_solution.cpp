@@ -10,7 +10,8 @@ KPMPSolution::KPMPSolution(uint k, uint numVertices) : k(k), numVertices(numVert
 	}
 
 	for (uint i = 0; i < numVertices; i++) {
-		ordering.insert({ i, i });
+		toOrdering.push_back(i);
+		fromOrdering.push_back(i);
 	}
 }
 
@@ -24,7 +25,7 @@ void KPMPSolution::KPMPSolution::addEdge(Edge e, bool orderingIncluded) {
 		pageToEdges.at(e.page).push_back(e);
 	}
 	else {
-		Edge e_ordered = { ordering.at(e.v1), ordering.at(e.v2), e.page };
+		Edge e_ordered = { toOrdering[e.v1], toOrdering[e.v2], e.page };
 		normalizeEdge(e_ordered);
 		pageToEdges.at(e.page).push_back(e_ordered);
 	}
@@ -43,17 +44,17 @@ void KPMPSolution::setOrdering(std::vector<uint> newOrdering) {
 
 		// go through all edges
 		for (auto &edge : edges) {
-			edge.v1 = newOrdering[ordering[edge.v1]];
-			edge.v2 = newOrdering[ordering[edge.v2]];
+			edge.v1 = newOrdering[fromOrdering[edge.v1]];
+			edge.v2 = newOrdering[fromOrdering[edge.v2]];
 
 			normalizeEdge(edge);
 		}
 	}
 
 	// save new ordering
-	ordering.clear();
+	toOrdering = newOrdering;
 	for (uint i = 0; i < newOrdering.size(); i++) {
-		ordering.insert({ newOrdering[i], i });
+		fromOrdering[toOrdering[i]] = i;
 	}
 }
 
@@ -94,9 +95,7 @@ uint KPMPSolution::computeCrossings() {
 void KPMPSolution::normalizeEdge(Edge& e)
 {
 	if (e.v1 > e.v2) {
-		uint tmp = e.v1;
-		e.v1 = e.v2;
-		e.v2 = tmp;
+		std::swap(e.v1, e.v2);
 	}
 }
 

@@ -17,7 +17,8 @@ class KPMPSolution {
     private:
     	uint k;
 		uint numVertices;
-		std::unordered_map<uint, uint> ordering; // new ordering (e.g. 2,1,3) -> basic ordering (e.g. 1,2,3)
+		std::vector<uint> toOrdering;
+		std::vector<uint> fromOrdering;
 		std::unordered_map<uint, std::vector<Edge>> pageToEdges;
 
 		void normalizeEdge(Edge& e);
