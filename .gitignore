@@ -29,6 +29,7 @@
 
 # Build dir
 build/
+target/
 
 # Swap
 *.swp
