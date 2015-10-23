@@ -29,7 +29,7 @@ int main()
 	for (unsigned int i = 0; i < numVertices; i++) {
 		for (unsigned int j = i; j < numVertices; j++) {
 			if(adjacencyMatrix[i][j]) {
-				sol.addEdge({ i, j });
+				sol.addEdge({ i, j, 0 });
 				edgeNum++;
 			}
 		}
@@ -38,13 +38,7 @@ int main()
 	secondsneeded = Utils::endTimeMeasurement();
 	std::cout << "Filling solution with data complete in " << secondsneeded << " seconds" << std::endl;
    
-	Utils::startTimeMeasurement();
-
-
-	std::cout << "computing crossings..." << std::endl; 
-	std::cout << sol.computeCrossings() << std::endl;
-	secondsneeded = Utils::endTimeMeasurement();
-	std::cout << "Done: " << secondsneeded << " seconds needed" << std::endl;
+	std::cout << sol.getCrossings() << " crossings!" << std::endl;
 
 	return 0; 
 }
