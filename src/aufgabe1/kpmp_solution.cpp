@@ -94,9 +94,7 @@ uint KPMPSolution::computeCrossings() {
 void KPMPSolution::normalizeEdge(Edge& e)
 {
 	if (e.v1 > e.v2) {
-		uint tmp = e.v1;
-		e.v1 = e.v2;
-		e.v2 = tmp;
+		swap(e.v1, e.v2);
 	}
 }
 

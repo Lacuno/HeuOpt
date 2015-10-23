@@ -1,4 +1,3 @@
-
 #ifndef INSTANCE_READER_H_
 #define INSTANCE_READER_H_
 
@@ -32,7 +31,7 @@ public:
 		return numVertices;
 	}
 
-	std::vector<std::vector<unsigned int> > getAdjacencyList() const {
+	std::vector<std::vector<unsigned int>> getAdjacencyList() const {
 		return adjacencyList;
 	}
 

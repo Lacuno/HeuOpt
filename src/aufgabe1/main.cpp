@@ -11,9 +11,10 @@ int main()
 	std::cout << "Reading instance" << std::endl;
 	Utils::startTimeMeasurement();
 	const auto instance = std::unique_ptr<KPMPInstance>(KPMPInstance::readInstance("instances/automatic-6.txt"));
+	GreedyConstruction gc;
+	gc.construct(*instance);
 	double secondsneeded = Utils::endTimeMeasurement();
 	std::cout << "Reading complete in " << secondsneeded << " seconds" << std::endl;
-	GreedyConstruction gc;
 
 
 	const auto adjacencyMatrix = instance->getAdjacencyMatrix();

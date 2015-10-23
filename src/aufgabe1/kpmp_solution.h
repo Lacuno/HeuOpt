@@ -4,6 +4,7 @@
 #include <vector>
 #include <tuple>
 #include <unordered_map>
+#include <algorithm>
 
 typedef unsigned int uint;
 
