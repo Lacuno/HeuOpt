@@ -19,9 +19,8 @@ shared_ptr<KPMPSolution> GreedyConstruction::construct(std::string instanceName)
 
 	const auto adjacencyMatrix = instance->getAdjacencyMatrix();
 	const unsigned int numVertices = instance->getNumVertices();
-	const unsigned int k = instance->getK();
 
-	shared_ptr<KPMPSolution> solution(new KPMPSolution(k, numVertices));
+	shared_ptr<KPMPSolution> solution(new KPMPSolution(instance->getK(), numVertices));
 
 	std::cout << "Constructing..." << std::endl;
 	Utils::startTimeMeasurement();
@@ -78,18 +77,36 @@ shared_ptr<KPMPSolution> GreedyConstruction::construct(std::string instanceName)
 		}
 	}
 
+	// set ordering
+	solution->setOrdering(ordering);
+
 	// add all edges to the solution
 	for (unsigned int i = 0; i < numVertices; i++) {
 		for (unsigned int j = i; j < numVertices; j++) {
 			if (adjacencyMatrix[i][j]) {
-				solution->addEdge({ i, j, 0 }, true);
+				// search for a page where we can add the edge without crossings
+				unsigned int minCrossing = numVertices * numVertices;
+				unsigned int minPage = 0;
+
+				for (unsigned int p = 0; p < instance->getK(); p++) {
+					unsigned int crossings = solution->computeEdgeCrossings({ i, j, p }, false);
+
+					if (crossings == 0) {
+						minPage = p;
+						break;
+					}
+					else if (crossings < minCrossing) {
+						minPage = p;
+					}
+				}
+				
+				// add it on the min page (if it was not found add in on the first)
+				solution->addEdge({ i, j, minPage }, false);
 			}
 		}
 	}
 
-	std::cout << "Crossings without ordering: " << solution->getCrossings() << std::endl;
-	solution->setOrdering(ordering);
-	std::cout << "Crossings with ordering: " << solution->getCrossings() << std::endl;
+	std::cout << "Crossings : " << solution->getCrossings() << std::endl;
 	
 	secondsneeded = Utils::endTimeMeasurement();
 	std::cout << "Done in " << secondsneeded << " seconds" << std::endl;

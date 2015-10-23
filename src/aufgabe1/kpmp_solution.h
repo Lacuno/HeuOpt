@@ -24,6 +24,8 @@ class KPMPSolution {
 		// the edge must be in the graph yet! this is not checked!
 		void removeEdge(Edge e, bool orderingIncluded = true);
 		void setOrdering(std::vector<uint> ordering);
+		uint computeEdgeCrossings(Edge e, bool orderingIncluded = true);
+		void recomputeCrossings();
 
 		uint getCrossings(); 
 		std::vector<uint> getOrdering();
@@ -41,8 +43,6 @@ class KPMPSolution {
 		void normalizeEdge(Edge& e);
 
 		bool isCrossing(Edge& e1, Edge &e2);
-		uint computeEdgeCrossings(Edge &e);
-		void recomputeCrossings();
 };
 
 #endif /* INSTANCE_SOLUTION_H_ */
