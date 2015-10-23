@@ -109,14 +109,19 @@ bool KPMPSolution::isCrossing(Edge& e1, Edge &e2) {
 	return true;
 }
 
-uint KPMPSolution::computeEdgeCrossings(Edge& edge) {
-	const auto& edges = pageToEdges.at(edge.page);
+uint KPMPSolution::computeEdgeCrossings(Edge e, bool orderingIncluded) {
+	const auto& edges = pageToEdges.at(e.page);
+
+	if (!orderingIncluded) {
+		e = { positionToVertex[e.v1], positionToVertex[e.v2], e.page };
+	}
+
 	uint edgeCrossings = 0;
 
 	for (auto iterator1 = edges.begin(); iterator1 != edges.end(); ++iterator1) {
 		Edge otherEdge = *iterator1;
 
-		if (isCrossing(otherEdge, edge)) {
+		if (isCrossing(otherEdge, e)) {
 			edgeCrossings++;
 		}
 	}
