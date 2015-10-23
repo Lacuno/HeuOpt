@@ -6,32 +6,31 @@
 #include <unordered_map>
 
 typedef unsigned int uint;
-typedef std::pair<uint, uint> Edge;
 
-struct key_hash : public std::unary_function<Edge, std::size_t>
-{
- std::size_t operator()(const Edge& k) const
- {
-   return 10000 * std::get<0>(k) + std::get<1>(k);
- }
+struct Edge {
+	uint v1; // vertex number with ordering
+	uint v2; // vertex number with ordering
+	uint page;
 };
 
 class KPMPSolution {
     private:
     	uint k;
-        std::unordered_map<uint, uint> ordering; // Vertex to Ordering
-	std::unordered_map<uint, std::vector<Edge>> pageToEdges;
-	std::unordered_map<Edge, uint, key_hash> edgeToPage;
+		uint numVertices;
+		std::unordered_map<uint, uint> ordering; // new ordering (e.g. 2,1,3) -> basic ordering (e.g. 1,2,3)
+		std::unordered_map<uint, std::vector<Edge>> pageToEdges;
+
+		void normalizeEdge(Edge& e);
 
     public:
-	KPMPSolution(uint k, uint numVertices);
+		KPMPSolution(uint k, uint numVertices);
         
-	uint getPage(Edge e); 
-	std::vector<Edge> getEdgesFromPage(uint p);
-	void addEdge(uint p, Edge e);
-	void removeEdge(Edge e);
-	void setOrdering(std::unordered_map<uint, uint> &newOrdering);
-	uint computeCrossings(); 
+		std::vector<Edge> getEdgesFromPage(uint p);
+		void addEdge(Edge e, bool orderingIncluded = true);
+		void removeEdge(Edge e);
+		void setOrdering(std::vector<uint> newOrdering);
+
+		uint computeCrossings(); 
 };
 
 #endif /* INSTANCE_SOLUTION_H_ */

@@ -10,7 +10,7 @@ int main()
 {	
 	std::cout << "Reading instance" << std::endl;
 	Utils::startTimeMeasurement();
-	const auto instance = std::unique_ptr<KPMPInstance>(KPMPInstance::readInstance("instances/automatic-9.txt"));
+	const auto instance = std::unique_ptr<KPMPInstance>(KPMPInstance::readInstance("instances/automatic-6.txt"));
 	double secondsneeded = Utils::endTimeMeasurement();
 	std::cout << "Reading complete in " << secondsneeded << " seconds" << std::endl;
 	GreedyConstruction gc;
@@ -29,7 +29,7 @@ int main()
 	for (unsigned int i = 0; i < numVertices; i++) {
 		for (unsigned int j = i; j < numVertices; j++) {
 			if(adjacencyMatrix[i][j]) {
-				sol.addEdge(0, { i, j });
+				sol.addEdge({ i, j });
 				edgeNum++;
 			}
 		}

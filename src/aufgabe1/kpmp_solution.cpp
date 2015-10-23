@@ -3,7 +3,8 @@
 #include "kpmp_solution.h"
 
 using namespace std;
-KPMPSolution::KPMPSolution(uint k, uint numVertices) : k(k) {
+
+KPMPSolution::KPMPSolution(uint k, uint numVertices) : k(k), numVertices(numVertices){
 	for (uint i = 0; i < k; i++) {
 		pageToEdges.insert({ i, vector<Edge>() });
 	}
@@ -13,51 +14,60 @@ KPMPSolution::KPMPSolution(uint k, uint numVertices) : k(k) {
 	}
 }
 
-uint KPMPSolution::getPage(Edge e) {
-	return edgeToPage.at(e);
-}
-
 std::vector<Edge> KPMPSolution::getEdgesFromPage(uint p) {
 	return pageToEdges.at(p);
 }
 
-void KPMPSolution::KPMPSolution::addEdge(uint p, Edge e) {
-	pageToEdges.at(p).push_back(e);
-	edgeToPage.insert({ e,p });
+void KPMPSolution::KPMPSolution::addEdge(Edge e, bool orderingIncluded) {
+	if(orderingIncluded) {
+		normalizeEdge(e);
+		pageToEdges.at(e.page).push_back(e);
+	}
+	else {
+		Edge e_ordered = { ordering.at(e.v1), ordering.at(e.v2), e.page };
+		normalizeEdge(e_ordered);
+		pageToEdges.at(e.page).push_back(e_ordered);
+	}
 }
 
 void KPMPSolution::KPMPSolution::removeEdge(Edge e) {
-	vector<Edge>& edges = pageToEdges.at(edgeToPage.at(e));
-	edges.erase(std::remove(edges.begin(), edges.end(), e), edges.end());
-
-	edgeToPage.erase(e);
+	std::vector<Edge>& edges = pageToEdges.at(e.page);
+	edges.erase(std::remove_if(edges.begin(), edges.end(), [&](Edge const& e_) {return e_.v1 == e.v1 && e_.v2 == e.v2; }), edges.end());
 }
 
 
-void KPMPSolution::setOrdering(std::unordered_map<uint, uint> &newOrdering) {
-	ordering = newOrdering;
+void KPMPSolution::setOrdering(std::vector<uint> newOrdering) {
+	// go through all pages
+	for (auto& pte : pageToEdges) {
+		auto& edges = pte.second;
+
+		// go through all edges
+		for (auto &edge : edges) {
+			edge.v1 = newOrdering[ordering[edge.v1]];
+			edge.v2 = newOrdering[ordering[edge.v2]];
+
+			normalizeEdge(edge);
+		}
+	}
+
+	// save new ordering
+	ordering.clear();
+	for (uint i = 0; i < newOrdering.size(); i++) {
+		ordering.insert({ newOrdering[i], i });
+	}
 }
 
 uint KPMPSolution::computeCrossings() {
 	uint crossings = 0;
 
 	auto isCrossing = [&](Edge& e1, Edge& e2) {
-
-		//pair<uint, uint> o1 = e1;// { ordering.at(e1.first), ordering.at(e1.second) };
-		//pair<uint, uint> o2 = e2;// { ordering.at(e2.first), ordering.at(e2.second) };
-
-		uint o1_max = std::max(e1.first, e1.second);
-		uint o1_min = std::min(e1.first, e1.second);
-		uint o2_max = std::max(e2.first, e2.second);
-		uint o2_min = std::min(e2.first, e2.second);
-
 		// entire intervals not overlapping?
-		if (o1_max <= o2_min || o2_max <= o1_min)
+		if (e1.v2 <= e2.v1 || e2.v2 <= e1.v1)
 			return false;
 
 		// entire interval inside the other?
-		if (o1_min >= o2_min && o1_max <= o2_max
-			|| o2_min >= o1_min && o2_max <= o1_max)
+		if (e1.v1 >= e2.v1 && e1.v2 <= e2.v2
+			|| e2.v1 >= e1.v1 && e2.v2 <= e1.v2)
 			return false;
 
 		return true;
@@ -79,5 +89,14 @@ uint KPMPSolution::computeCrossings() {
 	}
 
 	return crossings;
+}
+
+void KPMPSolution::normalizeEdge(Edge& e)
+{
+	if (e.v1 > e.v2) {
+		uint tmp = e.v1;
+		e.v1 = e.v2;
+		e.v2 = tmp;
+	}
 }
 
