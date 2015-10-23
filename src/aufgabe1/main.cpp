@@ -9,12 +9,7 @@
 
 int main()
 {	
-//	std::cout << "Reading instance" << std::endl;
-//	Utils::startTimeMeasurement();
-//	const auto instance = std::unique_ptr<KPMPInstance>(KPMPInstance::readInstance("instances/automatic-6.txt"));
-//	double secondsneeded = Utils::endTimeMeasurement();
-//	std::cout << "Reading complete in " << secondsneeded << " seconds" << std::endl;
-	GreedyConstruction gc;
+	GreedyConstruction gc(true);
 
 	for (char i = 1; i <= 10; i++) {
 		std::string instanceName("instances/automatic-" + std::to_string(i) + ".txt");
