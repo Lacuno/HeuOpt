@@ -17,8 +17,8 @@ class KPMPSolution {
     private:
     	uint k;
 		uint numVertices;
-		std::vector<uint> toOrdering;
-		std::vector<uint> fromOrdering;
+		std::vector<uint> vertexToPosition;
+		std::vector<uint> positionToVertex;
 		std::unordered_map<uint, std::vector<Edge>> pageToEdges;
 
 		void normalizeEdge(Edge& e);
@@ -28,8 +28,8 @@ class KPMPSolution {
         
 		std::vector<Edge> getEdgesFromPage(uint p);
 		void addEdge(Edge e, bool orderingIncluded = true);
-		void removeEdge(Edge e);
-		void setOrdering(std::vector<uint> newOrdering);
+		void removeEdge(Edge e, bool orderingIncluded = true);
+		void setOrdering(std::vector<uint> ordering);
 
 		uint computeCrossings(); 
 };

@@ -10,7 +10,7 @@ int main()
 {	
 	std::cout << "Reading instance" << std::endl;
 	Utils::startTimeMeasurement();
-	const auto instance = std::unique_ptr<KPMPInstance>(KPMPInstance::readInstance("instances/automatic-6.txt"));
+	const auto instance = std::unique_ptr<KPMPInstance>(KPMPInstance::readInstance("instances/manual-ordering.txt"));
 	double secondsneeded = Utils::endTimeMeasurement();
 	std::cout << "Reading complete in " << secondsneeded << " seconds" << std::endl;
 	GreedyConstruction gc;
@@ -42,20 +42,6 @@ int main()
 
 
 	std::cout << "computing crossings..." << std::endl; 
-	std::cout << sol.computeCrossings() << std::endl;
-	secondsneeded = Utils::endTimeMeasurement();
-	std::cout << "Done: " << secondsneeded << " seconds needed" << std::endl;
-
-
-
-	std::cout << "setting new ordering..." << numVertices << std::endl;
-	std::vector<unsigned int> ordering;
-	for (int i = numVertices - 1; i >= 0; i--) {
-		ordering.push_back(i);
-	}
-	
-	Utils::startTimeMeasurement();
-	sol.setOrdering(ordering);
 	std::cout << sol.computeCrossings() << std::endl;
 	secondsneeded = Utils::endTimeMeasurement();
 	std::cout << "Done: " << secondsneeded << " seconds needed" << std::endl;

@@ -10,8 +10,8 @@ KPMPSolution::KPMPSolution(uint k, uint numVertices) : k(k), numVertices(numVert
 	}
 
 	for (uint i = 0; i < numVertices; i++) {
-		toOrdering.push_back(i);
-		fromOrdering.push_back(i);
+		positionToVertex.push_back(i);
+		vertexToPosition.push_back(i);
 	}
 }
 
@@ -25,37 +25,45 @@ void KPMPSolution::KPMPSolution::addEdge(Edge e, bool orderingIncluded) {
 		pageToEdges.at(e.page).push_back(e);
 	}
 	else {
-		Edge e_ordered = { toOrdering[e.v1], toOrdering[e.v2], e.page };
+		Edge e_ordered = { positionToVertex[e.v1], positionToVertex[e.v2], e.page };
 		normalizeEdge(e_ordered);
 		pageToEdges.at(e.page).push_back(e_ordered);
 	}
 }
 
-void KPMPSolution::KPMPSolution::removeEdge(Edge e) {
+void KPMPSolution::KPMPSolution::removeEdge(Edge e, bool orderingIncluded) {
 	std::vector<Edge>& edges = pageToEdges.at(e.page);
+
+	if (!orderingIncluded) {
+		e = { positionToVertex[e.v1], positionToVertex[e.v2], e.page };
+	}
+
+	normalizeEdge(e);
 	edges.erase(std::remove_if(edges.begin(), edges.end(), [&](Edge const& e_) {return e_.v1 == e.v1 && e_.v2 == e.v2; }), edges.end());
 }
 
 
-void KPMPSolution::setOrdering(std::vector<uint> newOrdering) {
+void KPMPSolution::setOrdering(std::vector<uint> ordering) {
+	// ordering is just a new ordering of vertices (vertex -> position)
+	for (uint i = 0; i < ordering.size(); i++) {
+		positionToVertex[ordering[i]] = i;
+	}
+
 	// go through all pages
 	for (auto& pte : pageToEdges) {
 		auto& edges = pte.second;
 
 		// go through all edges
 		for (auto &edge : edges) {
-			edge.v1 = newOrdering[fromOrdering[edge.v1]];
-			edge.v2 = newOrdering[fromOrdering[edge.v2]];
+			edge.v1 = positionToVertex[vertexToPosition[edge.v1]];
+			edge.v2 = positionToVertex[vertexToPosition[edge.v2]];
 
 			normalizeEdge(edge);
 		}
 	}
 
 	// save new ordering
-	toOrdering = newOrdering;
-	for (uint i = 0; i < newOrdering.size(); i++) {
-		fromOrdering[toOrdering[i]] = i;
-	}
+	vertexToPosition = ordering;
 }
 
 uint KPMPSolution::computeCrossings() {
