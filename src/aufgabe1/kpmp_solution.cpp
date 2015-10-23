@@ -81,6 +81,10 @@ uint KPMPSolution::getCrossings() {
 	return crossings;
 }
 
+std::vector<uint> KPMPSolution::getOrdering() {
+	return vertexToPosition;
+}
+
 void KPMPSolution::normalizeEdge(Edge& e)
 {
 	if (e.v1 > e.v2) {
