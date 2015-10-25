@@ -51,11 +51,10 @@ shared_ptr<KPMPSolution> GreedyConstruction::construct(std::string instanceName)
 					possibleExtensions.push_back(i);
 				}
 			}
-			if(possibleExtensions.size() == 0) {
-				break;
+			if(possibleExtensions.size() != 0) {
+				uint randomi = rng(randomEngine) % possibleExtensions.size();	
+				ind = possibleExtensions[randomi];
 			}
-			uint randomi = rng(randomEngine) % possibleExtensions.size();	
-			ind = possibleExtensions[randomi];
 		} else {
 			for (unsigned int i = 0; i < vertices.size(); i++) {
 				if (adjacencyMatrix[v1][vertices[i]]) {
