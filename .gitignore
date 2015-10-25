@@ -33,3 +33,7 @@ target/
 
 # Swap
 *.swp
+
+# Latex
+*.aux
+*.log
