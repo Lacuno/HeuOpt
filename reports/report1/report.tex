@@ -23,11 +23,11 @@
  
 %--------------------Begin Outline
 \section{Construction Heuristic Description}
-Our construction heuristic focueses on placing vertices next to each other that are adjacent to each other.
-This approach can not lead to crossings because the definitons states that in order to create a crossing between the edges $E_1 = \lbrace v_1, v_2 \rbrace$ and $E_2 = \lbrace v_3, v_4 \rbrace$, one of $v_3$ and $v_4$ must be inbetween of $v_1$ and $v_2$ and the other one outside.
-This can not happen if $v_1$ and $v_2$ are adjacent in the resulting ordering.
+Our construction heuristic focuses on searching a path through the graph without reusing vertices. If the path can not be extended, because no adjacent edge exists, it takes a unconnected vertex and continues. The result is used as an ordering.
+This approach leads to a reduced number of crossings, because the obtained path has not a single crossing itself.
 
-Therefore we created the following construction heuristic:
+It is trivial that this approach and other vertex ordering algorithms make no sense for fully connected graphs.
+
 \begin{lstlisting}[frame=single]
 // Create ordering
 Ordering o = { first vertex given }
@@ -55,24 +55,24 @@ As one can see we create the ordering first and then create the edge list.
 We use this approach because it is much faster than other construction heuristics that will adapt the ordering to the inserted edges.
 In our opinion one should not invest a lot of time in constructing a good solution because further improvement heuristics do this job very well and they should have more time to investigate the search space further.
 On the other hand the starting solution influences the structure of the solution and potentially it will keep this structure (or parts of it) when improving the solution. From this point of view a good starting heuristic would be preferable.
-Due to the six assignments in this course we assume that our improvement methods will most likly also change structure of the resulting solution, therefore we went with the first approach.
+Due to the six assignments in this course we assume that our improvement methods will most likely also change structure of the resulting solution, therefore we went with the first approach.
 
 Our solution is represented by a solution class file that stores two vectors that are kept synchronous, namely a vector that stores the ordering of each vertex and a vector that stores the vertex for each ordering.
 This makes calculations for the crossing number easier.
 We also store a hashmap (unordered\_map) that maps the page number to a vector of edges. 
 This datastructure represents all edges that are stored on one page.
-We do not compute the number of crossings seperately, but when inserting/deleting one edge from our solution class, we compute the difference that this insertion/deletion caused and add it to our already computed value.
+We do not compute the number of crossings separately, but when inserting/deleting one edge from our solution class, we compute the difference that this insertion/deletion caused and add it to our already computed value.
 This approach will make improvement heuristics such as local search much easier because the complexity of recalculating the whole objective function decreases drastically.
 
 Our construction heuristic that generates multiple solutions is an adaption of the previous shown heuristic.
-Instead of inserting the first adjacient vertex to the previously inserted one, we search for all adjacient vertices and choose a random one of them.
+Instead of inserting the first adjacent vertex to the previously inserted one, we search for all adjacent vertices and choose a random one of them.
 The advantage of this approach is that we are now able to construct multiple solutions with the same heuristic.
 Some solutions might be better and some might be worse but the solutions are not the same any more.
 When we improve given solutions it is often better to have multiple solutions.
 We can then do a more extensive search in the search space (e.g. Local search on multiple constructed solutions) or combine these solutions (e.g. Evolutionary algorithms).
 
 \section{Experimental Setup}
-We tested our program on the AC computing cluster on blade center 1 (bc1), which is running an Intel Xeon E5540 processor and is running on Ubuntu 14.04LTS.
+We tested our program on the AC computing cluster on blade center 1 (bc1), which is running an Intel Xeon E5540 processor and on Ubuntu 14.04LTS.
 Our code is written in C++11 without any library assistance and it was compiled with gcc 4.8.
 
 \newpage
