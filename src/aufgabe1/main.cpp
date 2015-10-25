@@ -10,10 +10,10 @@
 #include "utils.h"
 
 void usage() {
-	std::cout << "Usage: ./heuOpt -c {g | r} [-r]" << std::endl;
+	std::cout << "Usage: ./heuOpt -c {g | o} [-r]" << std::endl;
 	std::cout << "-c: Build with construction heuristic " << std::endl;
 	std::cout << "    option g: Greedy construction heuristic" << std::endl;
-	std::cout << "    option r: Rating construction heuristic" << std::endl;
+	std::cout << "    option o: Ordering construction heuristic (Randomization is not supported yet)" << std::endl;
 	std::cout << "-r: Randomize construction heuristic" << std::endl;
 }
 
@@ -49,7 +49,7 @@ int main(int argc, char** argv)
 	std::shared_ptr<ConstructionHeuristic> constructor;
 	if(typeOfConstructionHeuristic == 'g') {
 		constructor = std::shared_ptr<ConstructionHeuristic>(new GreedyConstruction(randomize));
-	} else if(typeOfConstructionHeuristic == 'r') {
+	} else if(typeOfConstructionHeuristic == 'o') {
 		constructor = std::shared_ptr<ConstructionHeuristic>(new OrderingConstruction(randomize));
 	} else {
 		usage();
