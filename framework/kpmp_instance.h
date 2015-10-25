@@ -31,7 +31,7 @@ public:
 		return numVertices;
 	}
 
-	std::vector<std::vector<unsigned int>> getAdjacencyList() const {
+	std::vector<std::vector<unsigned int>> &getAdjacencyList()  {
 		return adjacencyList;
 	}
 

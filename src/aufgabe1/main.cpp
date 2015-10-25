@@ -6,6 +6,7 @@
 #include "kpmp_solution_writer.h"
 #include "constructionheuristic.h"
 #include "greedyconstruction.h"
+#include "orderingconstruction.h"
 #include "utils.h"
 
 void usage() {
@@ -49,7 +50,7 @@ int main(int argc, char** argv)
 	if(typeOfConstructionHeuristic == 'g') {
 		constructor = std::shared_ptr<ConstructionHeuristic>(new GreedyConstruction(randomize));
 	} else if(typeOfConstructionHeuristic == 'r') {
-		//TODO: Build in rating construction
+		constructor = std::shared_ptr<ConstructionHeuristic>(new OrderingConstruction(randomize));
 	} else {
 		usage();
 		return -1;
