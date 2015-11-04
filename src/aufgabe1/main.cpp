@@ -1,6 +1,6 @@
 #include <iostream>
 #include <memory>
-#include <unistd.h> // Getopt from C Library
+#include <boost/program_options.hpp>
 #include "kpmp_instance.h"
 #include "kpmp_solution.h"
 #include "kpmp_solution_writer.h"
@@ -20,31 +20,27 @@ void usage() {
 int main(int argc, char** argv)
 {	
 	// Parse arguments
-	int opt;
-	int opterr;
-	bool doConstructionHeuristic = false;
-	bool randomize = false;
-	char typeOfConstructionHeuristic;
+	namespace po = boost::program_options;	
 
-	while((opt = getopt(argc, argv, "c:r")) != -1) {
-		switch(opt) {
-			case 'c':
-				doConstructionHeuristic = true;
-				typeOfConstructionHeuristic = optarg[0];
-				break;
-			case 'r':
-				randomize = true;
-				break;
-			default:
-				usage();
-				return -1;
-		}		
+	po::options_description desc("Arguments");
+	desc.add_options()
+		("help,h", "Usage: ./heuOpt -c {g | o} [-r]")
+		("c", po::value<char>(), "Build with construction heuristic: "
+								 "option g : Greedy construction heuristic"
+								 "option o : Ordering construction heuristic(Randomization is not supported yet)")
+		("r", "Randomize construction heuristic");
+
+	po::variables_map vm;
+	po::store(po::parse_command_line(argc, argv, desc), vm);
+	po::notify(vm);
+
+	if (vm.count("help")) {
+		cout << desc << "\n";
+		return 1;
 	}
 
-	if(!doConstructionHeuristic) {
-		usage();
-		return -1;
-	}
+	bool randomize = vm.count("r");
+	char typeOfConstructionHeuristic = vm.count("c") ? vm["c"].as<char>() : ' ';
 	
 	std::shared_ptr<ConstructionHeuristic> constructor;
 	if(typeOfConstructionHeuristic == 'g') {
