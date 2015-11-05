@@ -24,8 +24,10 @@ list(REMOVE_ITEM EX2_SOURCE "${CMAKE_SOURCE_DIR}/src/aufgabe2/main.cpp")
 
 
 
-include_directories(${CMAKE_SOURCE_DIR}/framework
-					${Boost_INCLUDE_DIRS})
+include_directories(${CMAKE_SOURCE_DIR}/src/aufgabe1
+		    ${CMAKE_SOURCE_DIR}/framework 
+	            ${Boost_INCLUDE_DIRS}
+		   )
 add_executable (heuopt_ex1 ${EX1_SOURCE} "${CMAKE_SOURCE_DIR}/src/aufgabe1/main.cpp")
 add_executable (heuopt_ex2 ${EX1_SOURCE} ${EX2_SOURCE} "${CMAKE_SOURCE_DIR}/src/aufgabe2/main.cpp")
 target_link_libraries(heuopt_ex1 ${Boost_LIBRARIES})
