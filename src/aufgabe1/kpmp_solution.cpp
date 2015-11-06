@@ -30,7 +30,7 @@ KPMPSolution::KPMPSolution(uint k, uint numVertices) : k(k), numVertices(numVert
 
 void KPMPSolution::KPMPSolution::addEdge(Edge e) {
 	if (adjacencyMatrices[e.page][e.v1][e.v2] || adjacencyMatrices[e.page][e.v2][e.v1])
-		throw new runtime_error("edge does already exist!");
+		throw std::invalid_argument("edge does already exist!");
 
 	// add edge to adjacency matrix
 	adjacencyMatrices[e.page][e.v1][e.v2] = true;
@@ -46,7 +46,7 @@ void KPMPSolution::KPMPSolution::addEdge(Edge e) {
 
 void KPMPSolution::KPMPSolution::removeEdge(Edge e) {
 	if (!adjacencyMatrices[e.page][e.v1][e.v2] || !adjacencyMatrices[e.page][e.v2][e.v1])
-		throw new runtime_error("edge does not exist!");
+		throw std::invalid_argument("edge does not exist!");
 
 	// update crossings
 	crossings -= computeEdgeCrossings(e);
@@ -108,13 +108,6 @@ std::vector<Edge> KPMPSolution::getEdges()
 
 	return edges;
 }
-
-/*void KPMPSolution::normalizeEdge(Edge& e)
-{
-	if (e.v1 > e.v2) {
-		std::swap(e.v1, e.v2);
-	}
-}*/
 
 bool KPMPSolution::isCrossing(Edge &e1, Edge &e2) {
 	uint e1_min = std::min(ordering[e1.v1], ordering[e1.v2]);
@@ -192,7 +185,7 @@ void KPMPSolution::recomputeCrossings() {
 						if (adjacencyMatrices[page][orderingInv[v2_min]][orderingInv[v2_max]] && v1_max < v2_max) {
 							crossings++;
 
-							std::cout << crossings << ". crossing detected: " << v1_min << ", " << v1_max << " | " << v2_min << ", " << v2_max << std::endl;
+							std::cout << crossings << ". crossing on page " << page << " : (" << orderingInv[v1_min] << ", " << orderingInv[v1_max] << "), (" << orderingInv[v2_min] << ", " << orderingInv[v2_max] << ")" << std::endl;
 						}
 					}
 				}

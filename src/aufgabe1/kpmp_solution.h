@@ -45,8 +45,6 @@ class KPMPSolution {
 		// use the adjacency matrix for a page lookup
 		AdjacencyList adjacencyList;
 
-		//void normalizeEdge(Edge& e);
-
 		bool isCrossing(Edge& e1, Edge &e2);
 		
 };

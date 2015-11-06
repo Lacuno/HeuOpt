@@ -105,7 +105,6 @@ shared_ptr<KPMPSolution> GreedyConstruction::construct(std::string instanceName)
 		}
 	}
 
-	solution->recomputeCrossings();
 	std::cout << "Crossings : " << solution->getCrossings() << std::endl;
 	
 	secondsneeded = Utils::endTimeMeasurement();
