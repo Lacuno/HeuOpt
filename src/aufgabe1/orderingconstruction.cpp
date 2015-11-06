@@ -82,7 +82,7 @@ shared_ptr<KPMPSolution> OrderingConstruction::construct(std::string instanceNam
 				unsigned int minPage = 0;
 
 				for (unsigned int p = 0; p < instance->getK(); p++) {
-					unsigned int crossings = solution->computeEdgeCrossings({ i, j, p }, false);
+					unsigned int crossings = solution->computeEdgeCrossings({ i, j, p });
 
 					if (crossings == 0) {
 						minPage = p;
@@ -94,7 +94,7 @@ shared_ptr<KPMPSolution> OrderingConstruction::construct(std::string instanceNam
 				}
 				
 				// add it on the min page (if it was not found add in on the first)
-				solution->addEdge({ i, j, minPage }, false);
+				solution->addEdge({ i, j, minPage });
 			}
 		}
 	}

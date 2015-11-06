@@ -10,11 +10,6 @@
 #include "utils.h"
 
 void usage() {
-	std::cout << "Usage: ./heuOpt -c {g | o} [-r]" << std::endl;
-	std::cout << "-c: Build with construction heuristic " << std::endl;
-	std::cout << "    option g: Greedy construction heuristic" << std::endl;
-	std::cout << "    option o: Ordering construction heuristic (Randomization is not supported yet)" << std::endl;
-	std::cout << "-r: Randomize construction heuristic" << std::endl;
 }
 
 int main(int argc, char** argv)
@@ -64,12 +59,9 @@ int main(int argc, char** argv)
 		KPMPSolutionWriter solutionWriter(sol->getK());
 		solutionWriter.setSpineOrder(sol->getOrdering());
 
-		for (unsigned int p = 0; p < sol->getK(); p++) {
-			const auto& edges = sol->getEdgesFromPage(p);
-
-			for (const auto& edge : edges) {
-				solutionWriter.addEdgeOnPage(edge.v1, edge.v2, p);
-			}
+		const auto& edges = sol->getEdges();
+		for (const auto& edge : edges) {
+			solutionWriter.addEdgeOnPage(edge.v1, edge.v2, edge.page);
 		}
 
 		solutionWriter.write("instances/result-" + std::to_string(i) + ".txt");

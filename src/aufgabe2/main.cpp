@@ -99,17 +99,12 @@ int main(int argc, char** argv)
 		improver->improve(sol, neighborhood, stepFunction);
 
 		// write solution
+		KPMPSolutionWriter solutionWriter(sol->getK());
 		std::cout << "Writing solution..." << std::endl;
 
-		KPMPSolutionWriter solutionWriter(sol->getK());
-		solutionWriter.setSpineOrder(sol->getOrdering());
-
-		for (unsigned int p = 0; p < sol->getK(); p++) {
-			const auto& edges = sol->getEdgesFromPage(p);
-
-			for (const auto& edge : edges) {
-				solutionWriter.addEdgeOnPage(edge.v1, edge.v2, p);
-			}
+		const auto& edges = sol->getEdges();
+		for (const auto& edge : edges) {
+			solutionWriter.addEdgeOnPage(edge.v1, edge.v2, edge.page);
 		}
 
 		solutionWriter.write("instances/result-" + std::to_string(i) + ".txt");
