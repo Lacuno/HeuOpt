@@ -1,3 +1,4 @@
+#include <iostream>
 #include "localsearch.h"
 #include "utils.h"
 
@@ -14,7 +15,10 @@ shared_ptr<KPMPSolution> LocalSearch::improve(shared_ptr<KPMPSolution> currentSo
 	double currentTime = 0; // Seconds
 	uint timeLimit = timeLimitMin * 60 + timeLimitSec; // Seconds
 
+	int i = 1;
 	while(currentTime < timeLimit) {
+		cout << "Iteration " << i++ << endl;
+		cout << "Obj: " << bestSolutionFound->getCrossings() << endl;
 	 	Utils::startTimeMeasurement();	
 
 		shared_ptr<KPMPSolution> newSolution;
