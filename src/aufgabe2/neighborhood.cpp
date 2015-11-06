@@ -2,9 +2,7 @@
 
 using namespace std;
 
-Neighborhood::Neighborhood(std::shared_ptr<KPMPSolution> currentSolution) :
-	currentSolution(currentSolution) {
-
+Neighborhood::Neighborhood() {
 }
 
 shared_ptr<KPMPSolution> Neighborhood::firstImprovement() {
@@ -35,4 +33,8 @@ shared_ptr<KPMPSolution> Neighborhood::improve(bool isBestImprovement) {
 		currentSolution = bestFoundSolution;
 		return bestFoundSolution;
 	}
+}
+
+void Neighborhood::setCurrentSolution(shared_ptr<KPMPSolution> newSolution) {
+	this->currentSolution = newSolution;
 }

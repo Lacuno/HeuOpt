@@ -6,11 +6,12 @@
 
 class Neighborhood {
     public:
-	Neighborhood(std::shared_ptr<KPMPSolution> currentSolution);
+	Neighborhood();
 	virtual ~Neighborhood() { }
 
 	virtual std::shared_ptr<KPMPSolution> firstImprovement();
 	virtual std::shared_ptr<KPMPSolution> bestImprovement();
+	virtual void setCurrentSolution(std::shared_ptr<KPMPSolution>);
 	virtual std::shared_ptr<KPMPSolution> randomNeighbor() = 0;
 
     protected:

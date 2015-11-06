@@ -34,6 +34,7 @@ shared_ptr<KPMPSolution> LocalSearch::improve(shared_ptr<KPMPSolution> currentSo
 
 		if(newSolution->getCrossings() < bestSolutionFound->getCrossings()) {
 			bestSolutionFound = newSolution;	
+			neighborHood->setCurrentSolution(bestSolutionFound);
 		}
 
 		double timeForThisIteration = Utils::endTimeMeasurement();
