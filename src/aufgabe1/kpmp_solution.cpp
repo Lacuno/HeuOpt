@@ -184,8 +184,6 @@ void KPMPSolution::recomputeCrossings() {
 						// check if the edge lies on the page and the neighbor is greater
 						if (adjacencyMatrices[page][orderingInv[v2_min]][orderingInv[v2_max]] && v1_max < v2_max) {
 							crossings++;
-
-							std::cout << crossings << ". crossing on page " << page << " : (" << orderingInv[v1_min] << ", " << orderingInv[v1_max] << "), (" << orderingInv[v2_min] << ", " << orderingInv[v2_max] << ")" << std::endl;
 						}
 					}
 				}
