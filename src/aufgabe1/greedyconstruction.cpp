@@ -89,12 +89,12 @@ shared_ptr<KPMPSolution> GreedyConstruction::construct(std::string instanceName)
 
 				for (unsigned int p = 0; p < instance->getK(); p++) {
 					unsigned int crossings = solution->computeEdgeCrossings({ i, j, p });
-
 					if (crossings == 0) {
 						minPage = p;
 						break;
 					}
 					else if (crossings < minCrossing) {
+						minCrossing = crossings;
 						minPage = p;
 					}
 				}
