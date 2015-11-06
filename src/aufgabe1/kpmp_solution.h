@@ -7,42 +7,48 @@
 #include <algorithm>
 
 typedef unsigned int uint;
+typedef std::vector<std::vector<bool>> AdjacencyMatrix;
+typedef std::vector<std::vector<std::reference_wrapper<uint>>> AdjacencyList;
 
 struct Edge {
-	uint v1; // vertex number with ordering
-	uint v2; // vertex number with ordering
+	uint v1;
+	uint v2;
 	uint page;
 };
 
 class KPMPSolution {
     public:
 		KPMPSolution(uint k, uint numVertices);
-        
-		std::vector<Edge> getEdgesFromPage(uint p);
-		// the edge must not be in the graph yet! this is not checked!
-		void addEdge(Edge e, bool orderingIncluded = true);
-		// the edge must be in the graph yet! this is not checked!
-		void removeEdge(Edge e, bool orderingIncluded = true);
-		void setOrdering(std::vector<uint> ordering);
-		uint computeEdgeCrossings(Edge e, bool orderingIncluded = true);
+
+		void addEdge(Edge e);
+		void removeEdge(Edge e);
+		void setOrdering(std::vector<uint> newOrdering);
+		uint computeEdgeCrossings(Edge e);
 		void recomputeCrossings();
 
 		uint getCrossings(); 
 		std::vector<uint> getOrdering();
 		uint getK();
+		std::vector<Edge> getEdges();
 
 	private:
 		uint k;
 		uint numVertices;
 		uint crossings;
 
-		std::vector<uint> vertexToPosition;
-		std::vector<uint> positionToVertex;
-		std::unordered_map<uint, std::vector<Edge>> pageToEdges;
+		std::vector<uint> ordering;
+		std::vector<uint> orderingInv;
 
-		void normalizeEdge(Edge& e);
+		// each page has an adjacency matrix
+		std::vector<AdjacencyMatrix> adjacencyMatrices;
+		// only one adjacency list for all pages. it would be very expensive to change the page otherwise
+		// use the adjacency matrix for a page lookup
+		AdjacencyList adjacencyList;
+
+		//void normalizeEdge(Edge& e);
 
 		bool isCrossing(Edge& e1, Edge &e2);
+		
 };
 
 #endif /* INSTANCE_SOLUTION_H_ */

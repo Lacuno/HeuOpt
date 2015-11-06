@@ -1,6 +1,6 @@
 #include <iostream>
 #include <memory>
-#include <boost/program_options.hpp>
+//#include <boost/program_options.hpp>
 #include "kpmp_instance.h"
 #include "kpmp_solution.h"
 #include "kpmp_solution_writer.h"
@@ -9,17 +9,10 @@
 #include "orderingconstruction.h"
 #include "utils.h"
 
-void usage() {
-	std::cout << "Usage: ./heuOpt -c {g | o} [-r]" << std::endl;
-	std::cout << "-c: Build with construction heuristic " << std::endl;
-	std::cout << "    option g: Greedy construction heuristic" << std::endl;
-	std::cout << "    option o: Ordering construction heuristic (Randomization is not supported yet)" << std::endl;
-	std::cout << "-r: Randomize construction heuristic" << std::endl;
-}
-
 int main(int argc, char** argv)
 {	
 	// Parse arguments
+	/*
 	namespace po = boost::program_options;	
 
 	po::options_description desc("Arguments");
@@ -41,16 +34,45 @@ int main(int argc, char** argv)
 
 	bool randomize = vm.count("r");
 	char typeOfConstructionHeuristic = vm.count("c") ? vm["c"].as<char>() : ' ';
-	
+	*/
+	bool randomize = false;
+	char typeOfConstructionHeuristic = 'g';
+
 	std::shared_ptr<ConstructionHeuristic> constructor;
 	if(typeOfConstructionHeuristic == 'g') {
 		constructor = std::shared_ptr<ConstructionHeuristic>(new GreedyConstruction(randomize));
 	} else if(typeOfConstructionHeuristic == 'o') {
 		constructor = std::shared_ptr<ConstructionHeuristic>(new OrderingConstruction(randomize));
 	} else {
-		usage();
+		//cout << desc << "\n";
 		return -1;
 	}
+
+	/*std::string name("instances/automatic-2.txt");
+	constructor->construct(name);
+	return 0;
+	const auto instance = KPMPInstance::readInstance(name);
+	const auto adjacencyMatrix = instance->getAdjacencyMatrix();
+	const unsigned int numVertices = instance->getNumVertices();
+	KPMPSolution solution(instance->getK(), numVertices);
+
+	solution.setOrdering({ 0, 2, 4, 1, 3 });
+	
+	for (unsigned int i = 0; i < numVertices; i++) {
+		for (unsigned int j = i; j < numVertices; j++) {
+			if (adjacencyMatrix[i][j]) {
+				
+				// add it on the min page (if it was not found add in on the first)
+				solution.addEdge({ i, j, 0 });
+			}
+		}
+	}
+
+	
+
+	std::cout << solution.getCrossings() << std::endl;
+	*/
+
 
 	for (char i = 1; i <= 10; i++) {
 		std::string instanceName("instances/automatic-" + std::to_string(i) + ".txt");
@@ -64,12 +86,9 @@ int main(int argc, char** argv)
 		KPMPSolutionWriter solutionWriter(sol->getK());
 		solutionWriter.setSpineOrder(sol->getOrdering());
 
-		for (unsigned int p = 0; p < sol->getK(); p++) {
-			const auto& edges = sol->getEdgesFromPage(p);
-
-			for (const auto& edge : edges) {
-				solutionWriter.addEdgeOnPage(edge.v1, edge.v2, p);
-			}
+		const auto& edges = sol->getEdges();
+		for (const auto& edge : edges) {
+			solutionWriter.addEdgeOnPage(edge.v1, edge.v2, edge.page);
 		}
 
 		solutionWriter.write("instances/result-" + std::to_string(i) + ".txt");

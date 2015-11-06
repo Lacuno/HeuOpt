@@ -30,7 +30,7 @@ shared_ptr<KPMPSolution> GreedyConstruction::construct(std::string instanceName)
 
 	// add all vertices to a deque
 	std::deque<unsigned int> vertices;
-	for (int i = 0; i < numVertices; i++) {
+	for (unsigned int i = 0; i < numVertices; i++) {
 		vertices.push_back(i);
 	}
 
@@ -88,7 +88,7 @@ shared_ptr<KPMPSolution> GreedyConstruction::construct(std::string instanceName)
 				unsigned int minPage = 0;
 
 				for (unsigned int p = 0; p < instance->getK(); p++) {
-					unsigned int crossings = solution->computeEdgeCrossings({ i, j, p }, false);
+					unsigned int crossings = solution->computeEdgeCrossings({ i, j, p });
 
 					if (crossings == 0) {
 						minPage = p;
@@ -100,11 +100,12 @@ shared_ptr<KPMPSolution> GreedyConstruction::construct(std::string instanceName)
 				}
 				
 				// add it on the min page (if it was not found add in on the first)
-				solution->addEdge({ i, j, minPage }, false);
+				solution->addEdge({ i, j, minPage });
 			}
 		}
 	}
 
+	solution->recomputeCrossings();
 	std::cout << "Crossings : " << solution->getCrossings() << std::endl;
 	
 	secondsneeded = Utils::endTimeMeasurement();
