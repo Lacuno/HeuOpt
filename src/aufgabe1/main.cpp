@@ -48,32 +48,6 @@ int main(int argc, char** argv)
 		return -1;
 	}
 
-	/*std::string name("instances/automatic-2.txt");
-	constructor->construct(name);
-	return 0;
-	const auto instance = KPMPInstance::readInstance(name);
-	const auto adjacencyMatrix = instance->getAdjacencyMatrix();
-	const unsigned int numVertices = instance->getNumVertices();
-	KPMPSolution solution(instance->getK(), numVertices);
-
-	solution.setOrdering({ 0, 2, 4, 1, 3 });
-	
-	for (unsigned int i = 0; i < numVertices; i++) {
-		for (unsigned int j = i; j < numVertices; j++) {
-			if (adjacencyMatrix[i][j]) {
-				
-				// add it on the min page (if it was not found add in on the first)
-				solution.addEdge({ i, j, 0 });
-			}
-		}
-	}
-
-	
-
-	std::cout << solution.getCrossings() << std::endl;
-	*/
-
-
 	for (char i = 1; i <= 10; i++) {
 		std::string instanceName("instances/automatic-" + std::to_string(i) + ".txt");
 
