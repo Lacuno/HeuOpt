@@ -2,6 +2,7 @@
 #define NEIGHBORHOOD_H
 
 #include <memory>
+#include <random>
 #include "kpmp_solution.h"
 
 class Neighborhood {
@@ -16,6 +17,8 @@ class Neighborhood {
 
     protected:
 	std::shared_ptr<KPMPSolution> currentSolution;
+	std::default_random_engine rng;
+	std::uniform_int_distribution<uint> distribution;
 
 	virtual bool hasNextNeighbor() = 0;
 	virtual std::shared_ptr<KPMPSolution> nextNeighbor() = 0;

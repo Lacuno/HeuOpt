@@ -31,6 +31,8 @@ class KPMPSolution {
 		uint getK();
 		std::vector<Edge> getEdges();
 
+		uint getNumVertices();
+
 	private:
 		uint k;
 		uint numVertices;

@@ -192,3 +192,7 @@ void KPMPSolution::recomputeCrossings() {
 		}
 	}
 }
+
+uint KPMPSolution::getNumVertices() {
+	return numVertices;
+}
