@@ -8,7 +8,7 @@
 #include <memory>
 
 typedef unsigned int uint;
-typedef std::vector<std::vector<bool>> AdjacencyMatrix;
+typedef std::vector<std::vector<int>> AdjacencyMatrix;
 typedef std::vector<std::vector<std::reference_wrapper<uint>>> AdjacencyList;
 
 struct Edge {
@@ -46,8 +46,8 @@ class KPMPSolution {
 		std::vector<uint> ordering;
 		std::vector<uint> orderingInv;
 
-		// each page has an adjacency matrix
-		std::vector<AdjacencyMatrix> adjacencyMatrices;
+		//adjacency matrix
+		AdjacencyMatrix adjacencyMatrix;
 		// only one adjacency list for all pages. it would be very expensive to change the page otherwise
 		// use the adjacency matrix for a page lookup
 		AdjacencyList adjacencyList;

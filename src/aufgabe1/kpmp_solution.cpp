@@ -6,26 +6,18 @@
 using namespace std;
 
 KPMPSolution::KPMPSolution(uint k, uint numVertices) : k(k), numVertices(numVertices), crossings(0) {
-	for (uint p = 0; p < k; p++) {
-		// add an adjacency matrix/list for a page
-		adjacencyMatrices.push_back(AdjacencyMatrix());
 
-		for (uint x = 0; x < numVertices; x++) {
-			adjacencyMatrices[p].push_back(std::vector<bool>());
+	for (uint x = 0; x < numVertices; x++) {
+		adjacencyMatrix.push_back(std::vector<int>());
+		adjacencyList.push_back(std::vector<std::reference_wrapper<uint>>());
 
-			for (uint y= 0; y < numVertices; y++) {
-				adjacencyMatrices[p][x].push_back(false);
-			}
+		ordering.push_back(x);
+		orderingInv.push_back(x);
+
+		for (uint y= 0; y < numVertices; y++) {
+			adjacencyMatrix[x].push_back(-1);
 		}
 	}
-
-	for (uint i = 0; i < numVertices; i++) {
-		ordering.push_back(i);
-		orderingInv.push_back(i);
-
-		adjacencyList.push_back(std::vector<std::reference_wrapper<uint>>());
-	}
-
 	
 }
 
@@ -36,7 +28,7 @@ KPMPSolution::KPMPSolution(shared_ptr<KPMPSolution> solution) {
 
 	ordering = solution->ordering;
 	orderingInv = solution->orderingInv;
-	adjacencyMatrices = solution->adjacencyMatrices;
+	adjacencyMatrix = solution->adjacencyMatrix;
 
 	for (uint i = 0; i < numVertices; i++) {
 		adjacencyList.push_back(std::vector<std::reference_wrapper<uint>>());
@@ -50,12 +42,12 @@ KPMPSolution::KPMPSolution(shared_ptr<KPMPSolution> solution) {
 }
 
 void KPMPSolution::KPMPSolution::addEdge(Edge e) {
-	if (adjacencyMatrices[e.page][e.v1][e.v2] || adjacencyMatrices[e.page][e.v2][e.v1])
+	if (adjacencyMatrix[e.v1][e.v2] >= 0 || adjacencyMatrix[e.v2][e.v1] >= 0)
 		throw std::invalid_argument("edge does already exist!");
 
 	// add edge to adjacency matrix
-	adjacencyMatrices[e.page][e.v1][e.v2] = true;
-	adjacencyMatrices[e.page][e.v2][e.v1] = true;
+	adjacencyMatrix[e.v1][e.v2] = e.page;
+	adjacencyMatrix[e.v2][e.v1] = e.page;
 
 	// add edge to adjacency list
 	adjacencyList[e.v1].push_back(std::ref(ordering[e.v2]));
@@ -67,15 +59,15 @@ void KPMPSolution::KPMPSolution::addEdge(Edge e) {
 }
 
 void KPMPSolution::KPMPSolution::removeEdge(Edge e) {
-	if (!adjacencyMatrices[e.page][e.v1][e.v2] || !adjacencyMatrices[e.page][e.v2][e.v1])
+	if (!adjacencyMatrix[e.v1][e.v2] == -1 || !adjacencyMatrix[e.v2][e.v1] == -1)
 		throw std::invalid_argument("edge does not exist!");
 
 	// update crossings
 	crossings -= computeEdgeCrossings(e);
 
 	// remove edge from adjacency matrix
-	adjacencyMatrices[e.page][e.v1][e.v2] = false;
-	adjacencyMatrices[e.page][e.v2][e.v1] = false;
+	adjacencyMatrix[e.v1][e.v2] = -1;
+	adjacencyMatrix[e.v2][e.v1] = -1;
 
 	// remove edge from adjacency list
 	auto &vertices1 = adjacencyList[e.v1];
@@ -111,12 +103,10 @@ std::vector<Edge> KPMPSolution::getEdges()
 {
 	std::vector<Edge> edges;
 
-	for (uint p = 0; p < k; p++) {
-		for (uint v1 = 0; v1 < numVertices; v1++) {
-			for (uint v2 = v1 + 1; v2 < numVertices; v2++) {
-				if (adjacencyMatrices[p][v1][v2]) {
-					edges.push_back({v1, v2, p});
-				}
+	for (uint v1 = 0; v1 < numVertices; v1++) {
+		for (uint v2 = v1 + 1; v2 < numVertices; v2++) {
+			if (adjacencyMatrix[v1][v2] >= 0) {
+				edges.push_back({v1, v2, (uint)adjacencyMatrix[v1][v2] });
 			}
 		}
 	}
@@ -155,7 +145,7 @@ uint KPMPSolution::computeEdgeCrossings(Edge e) {
 		// iterate over all neighbors of v
 		for (uint v_neighbor : adjacencyList[orderingInv[v]]) {
 			// check if the edge lies on the page and the neighbor is outside
-			if (adjacencyMatrices[e.page][orderingInv[v]][orderingInv[v_neighbor]] && (v_neighbor < v_min || v_neighbor > v_max)) {
+			if (adjacencyMatrix[orderingInv[v]][orderingInv[v_neighbor]] == e.page && (v_neighbor < v_min || v_neighbor > v_max)) {
 				edgeCrossings++;
 			}
 		}
@@ -176,17 +166,9 @@ void KPMPSolution::recomputeCrossings() {
 		// for all neighbors of the vertex
 		for (uint v1_max : adjacencyList[orderingInv[v1_min]]) {
 
-			// on what page is the edge?
-			uint page = 0;
-			for (uint p = 0; p < k; p++) {
-				if (adjacencyMatrices[p][orderingInv[v1_min]][orderingInv[v1_max]]) {
-					page = p;
-					break;
-				}
-			}
-
 			// only consider the 'smaller to bigger' edges: this takes care of not counting edges twice
-			if (v1_min < v1_max && adjacencyMatrices[page][orderingInv[v1_min]][orderingInv[v1_max]]) {
+			int page = adjacencyMatrix[orderingInv[v1_min]][orderingInv[v1_max]];
+			if (v1_min < v1_max && page >= 0) {
 
 				// iterate every vertex between v1 min and v1 max
 				for (uint v2_min = v1_min + 1; v2_min < v1_max; v2_min++) {
@@ -195,7 +177,7 @@ void KPMPSolution::recomputeCrossings() {
 					for (uint v2_max : adjacencyList[orderingInv[v2_min]]) {
 
 						// check if the edge lies on the page and the neighbor is greater
-						if (adjacencyMatrices[page][orderingInv[v2_min]][orderingInv[v2_max]] && v1_max < v2_max) {
+						if (adjacencyMatrix[orderingInv[v2_min]][orderingInv[v2_max]] == page && v1_max < v2_max) {
 							crossings++;
 						}
 					}
