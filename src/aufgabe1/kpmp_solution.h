@@ -32,6 +32,7 @@ class KPMPSolution {
 		std::vector<Edge> getEdges();
 
 		uint getNumVertices();
+		const AdjacencyList& getAdjacencyList();
 
 	private:
 		uint k;

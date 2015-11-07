@@ -13,11 +13,26 @@ shared_ptr<KPMPSolution> EdgeShiftNeighborhood::randomNeighbor() {
 }
 
 bool EdgeShiftNeighborhood::hasNextNeighbor() {
-	// TODO: Implement
-	return false;
+
+	uint k = currentSolution->getK();
+	return currentPage < k;
 }
 
 shared_ptr<KPMPSolution> EdgeShiftNeighborhood::nextNeighbor() {
-	// TODO: Implement
+
+	shared_ptr<KPMPSolution> neighbor = generateNewNeighbor(currentPos, shiftTo);	
+
+	// Next neighbor
+	uint orderingSize = currentSolution->getNumVertices(); 
+	shiftTo++;
+	if(shiftTo == currentPos) {
+		shiftTo++;
+	}
+	currentPos += shiftTo / orderingSize;
+	shiftTo %= orderingSize;
+
+	return neighbor;
+
+
 	return currentSolution;
 }

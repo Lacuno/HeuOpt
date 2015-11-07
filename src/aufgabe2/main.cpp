@@ -92,17 +92,19 @@ int main(int argc, char** argv)
 	}
 
 	for (char i = 1; i <= 10; i++) {
+		if(i == 6) continue;
 		std::string instanceName("instances/automatic-" + std::to_string(i) + ".txt");
 
 		const auto& sol = constructor->construct(instanceName);
 		neighborhood->setCurrentSolution(sol);
-		improver->improve(sol, neighborhood, stepFunction);
+		auto improvedsol = improver->improve(sol, neighborhood, stepFunction);
 
 		// write solution
 		KPMPSolutionWriter solutionWriter(sol->getK());
 		std::cout << "Writing solution..." << std::endl;
 
-		const auto& edges = sol->getEdges();
+		solutionWriter.setSpineOrder(improvedsol->getOrdering());
+		const auto& edges = improvedsol->getEdges();
 		for (const auto& edge : edges) {
 			solutionWriter.addEdgeOnPage(edge.v1, edge.v2, edge.page);
 		}

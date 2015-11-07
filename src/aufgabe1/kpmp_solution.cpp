@@ -196,3 +196,7 @@ void KPMPSolution::recomputeCrossings() {
 uint KPMPSolution::getNumVertices() {
 	return numVertices;
 }
+
+const AdjacencyList& KPMPSolution::getAdjacencyList() {
+	return adjacencyList;
+}

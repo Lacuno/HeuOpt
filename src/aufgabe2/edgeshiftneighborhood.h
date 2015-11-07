@@ -14,6 +14,10 @@ class EdgeShiftNeighborhood {
     protected:
 	virtual bool hasNextNeighbor();
 	virtual std::shared_ptr<KPMPSolution> nextNeighbor();
+
+    private:
+	uint currentPage;
+	uint currentEdge;
 };
 
 #endif /* EDGE_SHIFT_NEIGHBORHOOD_H*/

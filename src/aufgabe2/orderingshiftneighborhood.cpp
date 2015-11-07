@@ -34,6 +34,9 @@ shared_ptr<KPMPSolution> OrderingShiftNeighborhood::nextNeighbor() {
 	// Next neighbor
 	uint orderingSize = currentSolution->getNumVertices(); 
 	shiftTo++;
+	if(shiftTo == currentPos) {
+		shiftTo++;
+	}
 	currentPos += shiftTo / orderingSize;
 	shiftTo %= orderingSize;
 
