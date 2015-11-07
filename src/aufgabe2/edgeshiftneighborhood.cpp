@@ -14,11 +14,11 @@ shared_ptr<KPMPSolution> EdgeShiftNeighborhood::randomNeighbor() {
 	uint v1 = distribution(rng);	
 	uint v2 = distribution(rng);
 
-	uint page = currentSolution->findPageForEdge(v1, v2);
+	uint page = currentSolution->getPageForEdge(v1, v2);
 	while(page == -1) {
 		v1 = distribution(rng);
 		v2 = distribution(rng);
-		page = currentSolution->findPageForEdge(v1, v2);
+		page = currentSolution->getPageForEdge(v1, v2);
 	}
 
 	uint shiftToPage = distribution(rng) % currentSolution->getK();
@@ -37,9 +37,9 @@ bool EdgeShiftNeighborhood::hasNextNeighbor() {
 	uint k = currentSolution->getK();
 	assert(currentEdgeV1 < numVertices);
 	assert(currentEdgeV2 < numVertices);
-	const auto& matrices = currentSolution->getAdjacencyMatrices();
+	const auto& matrix = currentSolution->getAdjacencyMatrix();
 	while(currentPage < k) {
-		if(matrices[currentPage][currentEdgeV1][currentEdgeV2]) {
+		if(matrix[currentEdgeV1][currentEdgeV2] == currentPage) {
 			return true;
 		} else {
 			currentEdgeV2++;

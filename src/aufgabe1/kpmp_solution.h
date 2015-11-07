@@ -34,8 +34,8 @@ class KPMPSolution {
 		std::vector<Edge> getEdges();
 
 		uint getNumVertices();
-		const AdjacencyList& getAdjacencyList(uint page);
-		const std::vector<AdjacencyList>& getAdjacencyLists();
+		std::vector<uint> getNeighbors(uint page, uint v);
+		const AdjacencyMatrix& getAdjacencyMatrix();
 		int getPageForEdge(uint v1, uint v2); // -1 if edge not found
 
 	private:
@@ -46,10 +46,7 @@ class KPMPSolution {
 		std::vector<uint> ordering;
 		std::vector<uint> orderingInv;
 
-		//adjacency matrix
 		AdjacencyMatrix adjacencyMatrix;
-		// only one adjacency list for all pages. it would be very expensive to change the page otherwise
-		// use the adjacency matrix for a page lookup
 		std::vector<AdjacencyList> adjacencyLists;
 
 		bool isCrossing(Edge& e1, Edge &e2);

@@ -53,7 +53,7 @@ KPMPSolution::KPMPSolution(shared_ptr<KPMPSolution> solution) {
 }
 
 void KPMPSolution::KPMPSolution::addEdge(Edge e) {
-	if (adjacencyMatrix[e.v1][e.v2] >= 0 || adjacencyMatrix[e.v2][e.v1] >= 0)
+	if (adjacencyMatrix[e.v1][e.v2] >= 0)
 		throw std::invalid_argument("edge does already exist!");
 
 	// add edge to adjacency matrix
@@ -70,7 +70,7 @@ void KPMPSolution::KPMPSolution::addEdge(Edge e) {
 }
 
 void KPMPSolution::KPMPSolution::removeEdge(Edge e) {
-	if (!adjacencyMatrix[e.v1][e.v2] == -1 || !adjacencyMatrix[e.v2][e.v1] == -1)
+	if (adjacencyMatrix[e.v1][e.v2] == -1)
 		throw std::invalid_argument("edge does not exist!");
 
 	// update crossings
@@ -207,12 +207,18 @@ uint KPMPSolution::getNumVertices() {
 	return numVertices;
 }
 
-const AdjacencyList& KPMPSolution::getAdjacencyList(uint page) {
-	return adjacencyLists[page];
+std::vector<uint> KPMPSolution::getNeighbors(uint page, uint v) {
+	std::vector<uint> neighbors;
+
+	for (uint n : adjacencyLists[page][v]) {
+		neighbors.push_back(orderingInv[n]);
+	}
+
+	return neighbors;
 }
 
-const vector<AdjacencyList>& KPMPSolution::getAdjacencyLists() {
-	return adjacencyLists;
+const AdjacencyMatrix& KPMPSolution::getAdjacencyMatrix() {
+	return adjacencyMatrix;
 }
 
 int KPMPSolution::getPageForEdge(uint v1, uint v2) {
