@@ -56,12 +56,8 @@ void OrderingShiftNeighborhood::setCurrentSolution(shared_ptr<KPMPSolution> newS
 shared_ptr<KPMPSolution> OrderingShiftNeighborhood::generateNewNeighbor(uint elem, uint shift) {
 
 	shared_ptr<KPMPSolution> neighbor = shared_ptr<KPMPSolution>(new KPMPSolution(currentSolution));
-	vector<uint> newOrdering = currentSolution->getOrdering();
 
-	uint elementToMove = newOrdering[elem];
-	newOrdering.erase(newOrdering.begin() + elem);
-	newOrdering.insert(newOrdering.begin() + shift, elementToMove);
-	neighbor->setOrdering(newOrdering);
+	neighbor->shiftOrdering(elem, shift);
 
 	return neighbor;
 }

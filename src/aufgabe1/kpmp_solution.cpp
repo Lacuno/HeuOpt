@@ -87,6 +87,31 @@ void KPMPSolution::KPMPSolution::removeEdge(Edge e) {
 	vertices2.erase(std::remove_if(vertices2.begin(), vertices2.end(), [&](uint const &v) { return v == ordering[e.v1]; }), vertices2.end());
 }
 
+void KPMPSolution::shiftOrdering(uint idx, uint shift) {
+	uint elementToMove = orderingInv[idx];
+
+	// remove the crossings from the old neighbors
+	for (uint p = 0; p < k; p++) {
+		for (uint n : adjacencyLists[p][elementToMove]) {
+			crossings -= computeEdgeCrossings({ elementToMove, orderingInv[n], p });
+		}
+	}
+
+	orderingInv.erase(orderingInv.begin() + idx);
+	orderingInv.insert(orderingInv.begin() + shift, elementToMove);
+
+	for (uint i = 0; i < ordering.size(); i++) {
+		ordering[orderingInv[i]] = i;
+	}
+
+	// add the crossings from the new neighbors
+	for (uint p = 0; p < k; p++) {
+		for (uint n : adjacencyLists[p][elementToMove]) {
+			crossings += computeEdgeCrossings({ elementToMove, orderingInv[n], p });
+		}
+	}
+}
+
 void KPMPSolution::setOrdering(std::vector<uint> newOrdering) {
 	// we have to flip ordering (index -> vertex to vertex -> index)
 	for (uint i = 0; i < ordering.size(); i++) {

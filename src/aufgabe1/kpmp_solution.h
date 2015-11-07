@@ -24,7 +24,10 @@ class KPMPSolution {
 
 		void addEdge(Edge e);
 		void removeEdge(Edge e);
+
+		void shiftOrdering(uint idx, uint shift);
 		void setOrdering(std::vector<uint> newOrdering);
+
 		uint computeEdgeCrossings(Edge e);
 		void recomputeCrossings();
 
