@@ -36,7 +36,6 @@ class KPMPSolution {
 		uint getNumVertices();
 		const AdjacencyMatrix& getAdjacencyMatrix(uint page);
 		const std::vector<AdjacencyMatrix>& getAdjacencyMatrices();
-		uint getSizeOfPage(uint page);
 
 	private:
 		uint k;
@@ -45,7 +44,6 @@ class KPMPSolution {
 
 		std::vector<uint> ordering;
 		std::vector<uint> orderingInv;
-		std::vector<uint> pageSize;
 
 		// each page has an adjacency matrix
 		std::vector<AdjacencyMatrix> adjacencyMatrices;
