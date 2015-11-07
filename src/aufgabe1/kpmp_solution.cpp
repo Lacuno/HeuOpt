@@ -17,6 +17,9 @@ KPMPSolution::KPMPSolution(uint k, uint numVertices) : k(k), numVertices(numVert
 				adjacencyMatrices[p][x].push_back(false);
 			}
 		}
+
+		// Each page has 0 vertices
+		pageSize.push_back(0);
 	}
 
 	for (uint i = 0; i < numVertices; i++) {
@@ -37,6 +40,7 @@ KPMPSolution::KPMPSolution(shared_ptr<KPMPSolution> solution) {
 	ordering = solution->ordering;
 	orderingInv = solution->orderingInv;
 	adjacencyMatrices = solution->adjacencyMatrices;
+	pageSize = solution->pageSize;
 
 	for (uint i = 0; i < numVertices; i++) {
 		adjacencyList.push_back(std::vector<std::reference_wrapper<uint>>());
@@ -61,6 +65,8 @@ void KPMPSolution::KPMPSolution::addEdge(Edge e) {
 	adjacencyList[e.v1].push_back(std::ref(ordering[e.v2]));
 	adjacencyList[e.v2].push_back(std::ref(ordering[e.v1]));
 
+	pageSize[e.page]++;
+
 	// update crossings
 	crossings += computeEdgeCrossings(e);
 }
@@ -82,6 +88,7 @@ void KPMPSolution::KPMPSolution::removeEdge(Edge e) {
 	vertices1.erase(std::remove_if(vertices1.begin(), vertices1.end(), [&](uint const &v) { return v == ordering[e.v2]; }), vertices1.end());
 	vertices2.erase(std::remove_if(vertices2.begin(), vertices2.end(), [&](uint const &v) { return v == ordering[e.v1]; }), vertices2.end());
 
+	pageSize[e.page]--;
 }
 
 void KPMPSolution::setOrdering(std::vector<uint> newOrdering) {
@@ -167,10 +174,8 @@ uint KPMPSolution::computeEdgeCrossings(Edge e) {
 void KPMPSolution::recomputeCrossings() {
 	crossings = 0;
 
-	
 	// the fankhausersche cross finding algorithm (c) d. fankhauser 
 	// written at 03:00am, so no bugs guaranteed!
-
 
 	// for all vertices
 	for (uint v1_min = 0; v1_min < numVertices; v1_min++) {
@@ -211,6 +216,14 @@ uint KPMPSolution::getNumVertices() {
 	return numVertices;
 }
 
-const AdjacencyList& KPMPSolution::getAdjacencyList() {
-	return adjacencyList;
+uint KPMPSolution::getSizeOfPage(uint page) {
+	return pageSize[page];
+}
+
+const AdjacencyMatrix& KPMPSolution::getAdjacencyMatrix(uint page) {
+	return adjacencyMatrices[page];
+}
+
+const vector<AdjacencyMatrix>& KPMPSolution::getAdjacencyMatrices() {
+	return adjacencyMatrices;
 }

@@ -10,16 +10,18 @@
 #include "localsearch.h"
 #include "neighborhood.h"
 #include "orderingshiftneighborhood.h"
+#include "edgeshiftneighborhood.h"
 #include "utils.h"
 
 void usage() {
-	std::cout << "Usage: ./heuOpt -c {g | o} [-r] -l {sho} -s {f | b | r}" << std::endl;
+	std::cout << "Usage: ./heuOpt -c {g | o} [-r] -l {sho | moe} -s {f | b | r}" << std::endl;
 	std::cout << "-c: Build with construction heuristic " << std::endl;
 	std::cout << "    option g: Greedy construction heuristic" << std::endl;
 	std::cout << "    option o: Ordering construction heuristic (Randomization is not supported yet)" << std::endl;
 	std::cout << "-r: Randomize construction heuristic" << std::endl;
 	std::cout << "-l: Improve with local search" << std::endl;
 	std::cout << "    option sho: Shift ordering neighborhood" << std::endl;
+	std::cout << "    option moe: move edge to other page neighborhood" << std::endl;
 	std::cout << "-s: Step function for local search" << std::endl;
 	std::cout << "    option f: First improvement strategy" << std::endl;
 	std::cout << "    option b: Best improvement strategy" << std::endl;
@@ -74,6 +76,8 @@ int main(int argc, char** argv)
 	std::shared_ptr<Neighborhood> neighborhood;
 	if(typeOfLocalSearch == "sho") {
 		neighborhood = std::shared_ptr<Neighborhood>(new OrderingShiftNeighborhood());
+	} else if(typeOfLocalSearch == "moe") {
+		neighborhood = std::shared_ptr<Neighborhood>(new EdgeShiftNeighborhood());
 	} else {
 		usage();
 		return -1;

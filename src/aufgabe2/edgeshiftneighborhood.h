@@ -1,15 +1,16 @@
 #ifndef EDGE_SHIFT_NEIGHBORHOOD_H 
 #define EDGE_SHIFT_NEIGHBORHOOD_H
 
+#include "neighborhood.h"
 #include <memory>
-#include <random>
 #include "kpmp_solution.h"
 
-class EdgeShiftNeighborhood {
+class EdgeShiftNeighborhood : public Neighborhood {
     public:
 	EdgeShiftNeighborhood();
 	virtual ~EdgeShiftNeighborhood() { }
 	virtual std::shared_ptr<KPMPSolution> randomNeighbor();
+	virtual void setCurrentSolution(std::shared_ptr<KPMPSolution> newSolution);
 
     protected:
 	virtual bool hasNextNeighbor();
@@ -17,7 +18,11 @@ class EdgeShiftNeighborhood {
 
     private:
 	uint currentPage;
-	uint currentEdge;
+	uint shiftToPage;
+	uint currentEdgeV1;
+	uint currentEdgeV2;
+
+	std::shared_ptr<KPMPSolution> generateNewNeighbor(uint shiftToPage, Edge& edge);
 };
 
 #endif /* EDGE_SHIFT_NEIGHBORHOOD_H*/
