@@ -231,6 +231,17 @@ const AdjacencyMatrix& KPMPSolution::getAdjacencyMatrix() {
 	return adjacencyMatrix;
 }
 
+void KPMPSolution::printCrossingMatrix() {
+
+	for (uint x = 0; x < numVertices; x++) {
+		for (uint y = 0; y < numVertices; y++) {
+			std::cout << crossingsMatrix[x][y] << " ";
+		}
+
+		std::cout << std::endl;
+	}
+
+}
 
 bool KPMPSolution::isCrossing(Edge &e1, Edge &e2) {
 	uint e1_min = std::min(ordering[e1.v1], ordering[e1.v2]);
@@ -261,17 +272,21 @@ uint KPMPSolution::updateEdgeCrossings(Edge e, char inc) {
 	// a crossing must go from the inside of the interval to the outside
 	for (uint v = v_min + 1; v < v_max; v++) {
 
+		uint e2_v1 = orderingInv[v];
+
 		// iterate over all neighbors of v
-		for (uint v_neighbor : adjacencyLists[e.page][orderingInv[v]]) {
+		for (uint v_neighbor : adjacencyLists[e.page][e2_v1]) {
 
 			// check if the edge lies on the page and the neighbor is outside
 			if (v_neighbor < v_min || v_neighbor > v_max) {
 
+				uint e2_v2 = orderingInv[v_neighbor];
+
 				crossings += inc;
 				crossingsMatrix[e.v1][e.v2] += inc;
 				crossingsMatrix[e.v2][e.v1] += inc;
-				crossingsMatrix[orderingInv[v]][orderingInv[v_neighbor]] += inc;
-				crossingsMatrix[orderingInv[v_neighbor]][orderingInv[v]] += inc;
+				crossingsMatrix[e2_v1][e2_v2] += inc;
+				crossingsMatrix[e2_v2][e2_v1] += inc;
 
 				localCrossings++;
 			}
