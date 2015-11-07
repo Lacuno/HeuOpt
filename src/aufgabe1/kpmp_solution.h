@@ -5,6 +5,7 @@
 #include <tuple>
 #include <unordered_map>
 #include <algorithm>
+#include <memory>
 
 typedef unsigned int uint;
 typedef std::vector<std::vector<bool>> AdjacencyMatrix;
@@ -19,6 +20,7 @@ struct Edge {
 class KPMPSolution {
     public:
 		KPMPSolution(uint k, uint numVertices);
+		KPMPSolution(std::shared_ptr<KPMPSolution> solution);
 
 		void addEdge(Edge e);
 		void removeEdge(Edge e);
