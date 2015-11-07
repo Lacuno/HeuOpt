@@ -16,9 +16,9 @@ shared_ptr<KPMPSolution> LocalSearch::improve(shared_ptr<KPMPSolution> currentSo
 	uint timeLimit = timeLimitMin * 60 + timeLimitSec; // Seconds
 
 	int i = 1;
-	while(currentTime < timeLimit) {
-		cout << "Iteration " << i++ << endl;
-		cout << "Obj: " << bestSolutionFound->getCrossings() << endl;
+	int noImprovementFound = 0;
+	while(currentTime < timeLimit && noImprovementFound <= 200) {
+//		cout << "Iteration " << i++ << endl;
 	 	Utils::startTimeMeasurement();	
 
 		shared_ptr<KPMPSolution> newSolution;
@@ -39,10 +39,14 @@ shared_ptr<KPMPSolution> LocalSearch::improve(shared_ptr<KPMPSolution> currentSo
 		if(newSolution->getCrossings() < bestSolutionFound->getCrossings()) {
 			bestSolutionFound = newSolution;	
 			neighborHood->setCurrentSolution(bestSolutionFound);
+			noImprovementFound = 0;
+		} else {
+			noImprovementFound++;
 		}
 
 		double timeForThisIteration = Utils::endTimeMeasurement();
 		currentTime += timeForThisIteration;	
+		cout << "Improved Obj: " << bestSolutionFound->getCrossings() << endl;
 	}
 
 	return bestSolutionFound;

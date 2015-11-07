@@ -13,7 +13,7 @@ shared_ptr<KPMPSolution> OrderingShiftNeighborhood::randomNeighbor() {
 	uint randomElem = distribution(rng);
 	uint shift = distribution(rng);
 
-	while(shiftTo == randomElem) {
+	while(shift == randomElem) {
 		shift = distribution(rng);
 	}
 

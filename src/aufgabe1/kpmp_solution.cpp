@@ -216,3 +216,12 @@ const AdjacencyMatrix& KPMPSolution::getAdjacencyMatrix(uint page) {
 const vector<AdjacencyMatrix>& KPMPSolution::getAdjacencyMatrices() {
 	return adjacencyMatrices;
 }
+
+uint KPMPSolution::findPageForEdge(uint v1, uint v2) {
+	for (uint p = 0; p < k; p++) {
+		if (adjacencyMatrices[p][v1][v2]) {
+			return p;
+		}
+	}
+	return -1;
+}

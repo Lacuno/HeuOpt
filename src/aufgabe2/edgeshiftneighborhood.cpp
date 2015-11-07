@@ -10,8 +10,25 @@ EdgeShiftNeighborhood::EdgeShiftNeighborhood() :
 }
 	
 shared_ptr<KPMPSolution> EdgeShiftNeighborhood::randomNeighbor() {
-	// TODO: Implement
-	return currentSolution;
+
+	uint v1 = distribution(rng);	
+	uint v2 = distribution(rng);
+
+	uint page = currentSolution->findPageForEdge(v1, v2);
+	while(page == -1) {
+		v1 = distribution(rng);
+		v2 = distribution(rng);
+		page = currentSolution->findPageForEdge(v1, v2);
+	}
+
+	uint shiftToPage = distribution(rng) % currentSolution->getK();
+	while(page == shiftToPage) {
+		shiftToPage = distribution(rng) % currentSolution->getK();
+	}
+
+	Edge e = {v1, v2, page};
+	shared_ptr<KPMPSolution> neighbor = generateNewNeighbor(shiftToPage, e);
+	return neighbor;
 }
 
 bool EdgeShiftNeighborhood::hasNextNeighbor() {
@@ -83,12 +100,11 @@ void EdgeShiftNeighborhood::setCurrentSolution(shared_ptr<KPMPSolution> newSolut
 	shiftToPage = 1;	
 
 	// Reinitialze Random Number Generator
-	distribution = uniform_int_distribution<uint>(0, newSolution->getOrdering().size()-1);
+	distribution = uniform_int_distribution<uint>(0, newSolution->getNumVertices()-1);
 }
 
 shared_ptr<KPMPSolution> EdgeShiftNeighborhood::generateNewNeighbor(uint shiftToPage, Edge& edge) {
 
-//	cout << "Move edge " << edge.v1 << " " << edge.v2 << " from page " << edge.page << " to page " << shiftToPage << endl;
 	shared_ptr<KPMPSolution> neighbor = shared_ptr<KPMPSolution>(new KPMPSolution(currentSolution));
 	neighbor->removeEdge(edge);
 	edge.page = shiftToPage;

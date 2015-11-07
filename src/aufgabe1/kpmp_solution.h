@@ -36,6 +36,7 @@ class KPMPSolution {
 		uint getNumVertices();
 		const AdjacencyMatrix& getAdjacencyMatrix(uint page);
 		const std::vector<AdjacencyMatrix>& getAdjacencyMatrices();
+		uint findPageForEdge(uint v1, uint v2);
 
 	private:
 		uint k;
