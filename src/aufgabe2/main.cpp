@@ -16,7 +16,7 @@
 #include "utils.h"
 
 void usage() {
-	std::cout << "Usage: ./heuOpt -c {g | o} [-r] -l {sho | moe} -s {f | b | r}" << std::endl;
+	std::cout << "Usage: ./heuOpt -c {g | o} [-r] -l {sho | moe | map | mcc} -s {f | b | r}" << std::endl;
 	std::cout << "-c: Build with construction heuristic " << std::endl;
 	std::cout << "    option g: Greedy construction heuristic" << std::endl;
 	std::cout << "    option o: Ordering construction heuristic (Randomization is not supported yet)" << std::endl;
