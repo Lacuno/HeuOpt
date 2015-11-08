@@ -11,6 +11,8 @@
 #include "neighborhood.h"
 #include "orderingshiftneighborhood.h"
 #include "edgeshiftneighborhood.h"
+#include "maxcrossingpageneighborhood.h"
+#include "minmaxcrossingorderingneighborhood.h"
 #include "utils.h"
 
 void usage() {
@@ -22,6 +24,8 @@ void usage() {
 	std::cout << "-l: Improve with local search" << std::endl;
 	std::cout << "    option sho: Shift ordering neighborhood" << std::endl;
 	std::cout << "    option moe: move edge to other page neighborhood" << std::endl;
+	std::cout << "    option map: move max crossing edges to other pages" << std::endl;
+	std::cout << "    option mmc: shift max crossing vertices to min crossing vertices" << std::endl;
 	std::cout << "-s: Step function for local search" << std::endl;
 	std::cout << "    option f: First improvement strategy" << std::endl;
 	std::cout << "    option b: Best improvement strategy" << std::endl;
@@ -61,15 +65,16 @@ int main(int argc, char** argv)
 	char typeOfConstructionHeuristic = vm.count("-c") ? vm["-c"].as<char>() : ' ';
 	std::string typeOfLocalSearch = vm.count("-l") ? vm["-l"].as<std::string>() : "";
 	char typeOfStepFunction = vm.count("-s") ? vm["-s"].as<char>() : ' ';
-	
+
+
 	std::shared_ptr<ConstructionHeuristic> constructor;
-	switch(typeOfConstructionHeuristic) {
-		case 'g': constructor = std::shared_ptr<ConstructionHeuristic>(new GreedyConstruction(randomize));
-			  break;
-		case 'o': constructor = std::shared_ptr<ConstructionHeuristic>(new OrderingConstruction(randomize));
-			  break;
-		default:  usage();
-			  return -1;
+	switch (typeOfConstructionHeuristic) {
+	case 'g': constructor = std::shared_ptr<ConstructionHeuristic>(new GreedyConstruction(randomize));
+		break;
+	case 'o': constructor = std::shared_ptr<ConstructionHeuristic>(new OrderingConstruction(randomize));
+		break;
+	default:  usage();
+		return -1;
 	}
 
 	std::shared_ptr<LocalSearch> improver = std::shared_ptr<LocalSearch>(new LocalSearch(1, 0));	
@@ -78,6 +83,10 @@ int main(int argc, char** argv)
 		neighborhood = std::shared_ptr<Neighborhood>(new OrderingShiftNeighborhood());
 	} else if(typeOfLocalSearch == "moe") {
 		neighborhood = std::shared_ptr<Neighborhood>(new EdgeShiftNeighborhood());
+	} else if (typeOfLocalSearch == "map") {
+		neighborhood = std::shared_ptr<Neighborhood>(new MaxCrossingPageNeighborhood());
+	} else if (typeOfLocalSearch == "mmc") {
+		neighborhood = std::shared_ptr<Neighborhood>(new MinMaxCrossingOrderingNeighborhood());
 	} else {
 		usage();
 		return -1;
@@ -95,24 +104,30 @@ int main(int argc, char** argv)
 			  return -1;
 	}
 
-	for (char i = 1; i <= 10; i++) {
-		if(i == 6) continue;
+	std::shared_ptr<Neighborhood> neighborhood2 = std::shared_ptr<Neighborhood>(new OrderingShiftNeighborhood());;
+	for (char i = 6; i <= 6; i++) {
 		std::string instanceName("instances/automatic-" + std::to_string(i) + ".txt");
 
 		const auto& sol = constructor->construct(instanceName);
-		neighborhood->setCurrentSolution(sol);
-		auto improvedsol = improver->improve(sol, neighborhood, stepFunction);
+		std::cout << sol->getCrossings() << std::endl;
 
-		// write solution
-		KPMPSolutionWriter solutionWriter(sol->getK());
+		neighborhood->setCurrentSolution(sol);
+		auto newsol = improver->improve(sol, neighborhood, stepFunction);
+		
+		newsol->recomputeCrossings();
+		std::cout << newsol->getCrossings() << std::endl;
+
+		//newsol->printCrossingMatrix(); 
+
+		// write solution                                             
+		KPMPSolutionWriter solutionWriter(newsol->getK());
 		std::cout << "Writing solution..." << std::endl;
 
-		solutionWriter.setSpineOrder(improvedsol->getOrdering());
-		const auto& edges = improvedsol->getEdges();
+		solutionWriter.setSpineOrder(newsol->getOrdering());
+		const auto& edges = newsol->getEdges();
 		for (const auto& edge : edges) {
 			solutionWriter.addEdgeOnPage(edge.v1, edge.v2, edge.page);
 		}
-
 		solutionWriter.write("instances/result-" + std::to_string(i) + ".txt");
 		std::cout << "Done!" << std::endl;
 
@@ -121,4 +136,3 @@ int main(int argc, char** argv)
 
 	return 0; 
 }
-
