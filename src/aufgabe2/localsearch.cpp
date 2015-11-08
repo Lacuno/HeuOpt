@@ -42,6 +42,7 @@ shared_ptr<KPMPSolution> LocalSearch::improve(shared_ptr<KPMPSolution> currentSo
 			noImprovementFound = 0;
 		} else {
 			noImprovementFound++;
+			continue;
 		}
 
 		double timeForThisIteration = Utils::endTimeMeasurement();

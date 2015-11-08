@@ -158,6 +158,10 @@ void KPMPSolution::shiftOrdering(uint elementToMove, uint shift) {
 	}
 }
 
+uint KPMPSolution::getPositionInOrdering(uint v) {
+	return orderingInv[v];
+}
+
 void KPMPSolution::recomputeCrossings() {
 
 	crossings = 0;

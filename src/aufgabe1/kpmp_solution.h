@@ -34,6 +34,7 @@ class KPMPSolution {
 		const std::vector<uint>& getOrdering();
 		void setOrdering(std::vector<uint> newOrdering);
 		void shiftOrdering(uint elementToMove, uint shift);
+		uint getPositionInOrdering(uint v);
 
 		void recomputeCrossings();
 		uint getCrossings(); 
