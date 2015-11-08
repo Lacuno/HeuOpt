@@ -19,8 +19,6 @@ class OrderingShiftNeighborhood : public Neighborhood {
     private:
 	uint currentPos;  	// Current position in Ordering
 	uint shiftTo;		// Position to shift to
-
-	std::shared_ptr<KPMPSolution> generateNewNeighbor(uint elem, uint shift);
 };
 
 #endif /* NEIGHBORHOOD_H */

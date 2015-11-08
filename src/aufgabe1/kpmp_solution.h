@@ -31,13 +31,14 @@ class KPMPSolution {
 		std::vector<Edge> getEdges();
 		int getPageForEdge(uint v1, uint v2); // -1 if edge not found
 		
-		std::vector<uint> getOrdering();
+		const std::vector<uint>& getOrdering();
 		void setOrdering(std::vector<uint> newOrdering);
-		void shiftOrdering(uint idx, uint shift);
+		void shiftOrdering(uint elementToMove, uint shift);
 
 		void recomputeCrossings();
 		uint getCrossings(); 
 		uint getEdgeCrossings(Edge e);
+		const CrossingsMatrix& getCrossingMatrix();
 
 		std::vector<uint> getNeighbors(uint page, uint v);
 		const AdjacencyMatrix& getAdjacencyMatrix();

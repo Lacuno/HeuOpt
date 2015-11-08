@@ -17,7 +17,31 @@ class MaxCrossingNeighborhood : public Neighborhood {
 	virtual std::shared_ptr<KPMPSolution> nextNeighbor();
 
     private:
-		Edge maxCrossingsEdge;
+		// we iterate:
+		//   for all v1 shifts
+		//     for all v2 shifts
+		//       for all pages
+		//         for all max edges
+
+		// the offset is the position of the max edges vertices in the ordering - we want to iterate over all possible combinations:
+		// ++----
+		// +-+---
+		// +--+--
+		// +---+-
+		// +----+
+		// -++---
+		// -+-+--
+		// etc
+
+		std::vector<Edge> maxCrossingsEdges;
+		uint currentIdx;
+		uint currentPage;
+		uint currentShiftV1;
+		uint currentShiftV2;
+		
+
+		bool firstIteration;
+
 	
 };
 

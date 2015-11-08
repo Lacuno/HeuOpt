@@ -52,6 +52,7 @@ KPMPSolution::KPMPSolution(shared_ptr<KPMPSolution> solution) {
 			}
 		}
 	}
+	
 }
 
 uint KPMPSolution::getK() {
@@ -115,7 +116,7 @@ int KPMPSolution::getPageForEdge(uint v1, uint v2) {
 	return adjacencyMatrix[v1][v2];
 }
 
-std::vector<uint> KPMPSolution::getOrdering() {
+const std::vector<uint>& KPMPSolution::getOrdering() {
 	return orderingInv;
 }
 
@@ -130,8 +131,8 @@ void KPMPSolution::setOrdering(std::vector<uint> newOrdering) {
 	recomputeCrossings();
 }
 
-void KPMPSolution::shiftOrdering(uint idx, uint shift) {
-	uint elementToMove = orderingInv[idx];
+void KPMPSolution::shiftOrdering(uint elementToMove, uint shift) {
+	uint idx = ordering[elementToMove];
 
 	// remove the crossings from the old neighbors
 	for (uint p = 0; p < k; p++) {
@@ -217,6 +218,10 @@ uint KPMPSolution::getEdgeCrossings(Edge e) {
 	return updateEdgeCrossings(e, 0);
 }
 
+const CrossingsMatrix & KPMPSolution::getCrossingMatrix() {
+	return crossingsMatrix;
+}
+
 std::vector<uint> KPMPSolution::getNeighbors(uint page, uint v) {
 	std::vector<uint> neighbors;
 
@@ -280,15 +285,18 @@ uint KPMPSolution::updateEdgeCrossings(Edge e, char inc) {
 			// check if the edge lies on the page and the neighbor is outside
 			if (v_neighbor < v_min || v_neighbor > v_max) {
 
+				localCrossings++;
+				if (inc == 0) {
+					continue;
+				}
+
 				uint e2_v2 = orderingInv[v_neighbor];
 
 				crossings += inc;
 				crossingsMatrix[e.v1][e.v2] += inc;
 				crossingsMatrix[e.v2][e.v1] += inc;
 				crossingsMatrix[e2_v1][e2_v2] += inc;
-				crossingsMatrix[e2_v2][e2_v1] += inc;
-
-				localCrossings++;
+				crossingsMatrix[e2_v2][e2_v1] += inc;				
 			}
 		}
 	}
