@@ -5,7 +5,7 @@ cmake_minimum_required (VERSION 2.8.11)
 project (HeuOpt)
 
 # Boost
-find_package(Boost COMPONENTS program_options REQUIRED)
+find_package(Boost COMPONENTS program_options system filesystem REQUIRED)
 
 file(COPY "instances/" DESTINATION "instances/")
 

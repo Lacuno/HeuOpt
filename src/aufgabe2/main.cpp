@@ -1,6 +1,7 @@
 #include <iostream>
 #include <memory>
 #include <boost/program_options.hpp>
+#include <boost/filesystem.hpp>
 #include "kpmp_instance.h"
 #include "kpmp_solution.h"
 #include "kpmp_solution_writer.h"
@@ -16,7 +17,7 @@
 #include "utils.h"
 
 void usage() {
-	std::cout << "Usage: ./heuOpt -c {g | o} [-r] -l {sho | moe | map | mcc} -s {f | b | r}" << std::endl;
+	std::cout << "Usage: ./heuOpt -c {g | o} [-r] -l {sho | moe | map | mmc} -s {f | b | r} -i <instance-name>" << std::endl;
 	std::cout << "-c: Build with construction heuristic " << std::endl;
 	std::cout << "    option g: Greedy construction heuristic" << std::endl;
 	std::cout << "    option o: Ordering construction heuristic (Randomization is not supported yet)" << std::endl;
@@ -30,7 +31,20 @@ void usage() {
 	std::cout << "    option f: First improvement strategy" << std::endl;
 	std::cout << "    option b: Best improvement strategy" << std::endl;
 	std::cout << "    option f: Random strategy" << std::endl;
+	std::cout << "-i: Specify the instance you want the algorithm to run on" << std::endl;
+	std::cout << "    Default is automatic-6" << std::endl;
 }
+
+bool is_file_exist(const char *fileName)
+{
+	return boost::filesystem::exists(fileName);
+}
+
+std::string getFilename(const std::string& str)
+{
+  std::size_t found = str.find_last_of("/\\");
+  return str.substr(found+1);
+}  
 
 int main(int argc, char** argv)
 {	
@@ -46,7 +60,8 @@ int main(int argc, char** argv)
 		(",r", "Randomize construction heuristic")
 		(",l", po::value<std::string>(), "Improve with local search"
 		      				"option sho: Shift ordering neighborhood")
-		(",s", po::value<char>());
+		(",s", po::value<char>())
+		(",i", po::value<std::string>());
 	po::variables_map vm;
 	try {
 		po::store(po::parse_command_line(argc, argv, desc), vm);
@@ -65,6 +80,7 @@ int main(int argc, char** argv)
 	char typeOfConstructionHeuristic = vm.count("-c") ? vm["-c"].as<char>() : ' ';
 	std::string typeOfLocalSearch = vm.count("-l") ? vm["-l"].as<std::string>() : "";
 	char typeOfStepFunction = vm.count("-s") ? vm["-s"].as<char>() : ' ';
+	std::string instanceName = vm.count("-i") ? vm["-i"].as<std::string>() : "instances/automatic-6.txt";
 
 
 	std::shared_ptr<ConstructionHeuristic> constructor;
@@ -77,7 +93,7 @@ int main(int argc, char** argv)
 		return -1;
 	}
 
-	std::shared_ptr<LocalSearch> improver = std::shared_ptr<LocalSearch>(new LocalSearch(1, 0));	
+	std::shared_ptr<LocalSearch> improver = std::shared_ptr<LocalSearch>(new LocalSearch(14, 0));	
 	std::shared_ptr<Neighborhood> neighborhood;
 	if(typeOfLocalSearch == "sho") {
 		neighborhood = std::shared_ptr<Neighborhood>(new OrderingShiftNeighborhood());
@@ -104,35 +120,37 @@ int main(int argc, char** argv)
 			  return -1;
 	}
 
-	std::shared_ptr<Neighborhood> neighborhood2 = std::shared_ptr<Neighborhood>(new OrderingShiftNeighborhood());;
-	for (char i = 6; i <= 6; i++) {
-		std::string instanceName("instances/automatic-" + std::to_string(i) + ".txt");
+	// Algorithm
+	const auto& sol = constructor->construct(instanceName);
 
-		const auto& sol = constructor->construct(instanceName);
-		std::cout << sol->getCrossings() << std::endl;
+	neighborhood->setCurrentSolution(sol);
+	auto newsol = improver->improve(sol, neighborhood, stepFunction);
+	std::cout << "Num Crossings: " << newsol->getCrossings() << std::endl;
 
-		neighborhood->setCurrentSolution(sol);
-		auto newsol = improver->improve(sol, neighborhood, stepFunction);
-		
-		newsol->recomputeCrossings();
-		std::cout << newsol->getCrossings() << std::endl;
+	// write solution                                             
+	KPMPSolutionWriter solutionWriter(newsol->getK());
+	std::cout << "Writing solution..." << std::endl;
 
-		//newsol->printCrossingMatrix(); 
-
-		// write solution                                             
-		KPMPSolutionWriter solutionWriter(newsol->getK());
-		std::cout << "Writing solution..." << std::endl;
-
-		solutionWriter.setSpineOrder(newsol->getOrdering());
-		const auto& edges = newsol->getEdges();
-		for (const auto& edge : edges) {
-			solutionWriter.addEdgeOnPage(edge.v1, edge.v2, edge.page);
-		}
-		solutionWriter.write("instances/result-" + std::to_string(i) + ".txt");
-		std::cout << "Done!" << std::endl;
-
-		std::cout << std::endl;
+	solutionWriter.setSpineOrder(newsol->getOrdering());
+	const auto& edges = newsol->getEdges();
+	for (const auto& edge : edges) {
+		solutionWriter.addEdgeOnPage(edge.v1, edge.v2, edge.page);
 	}
+	std::string path = "instances/result/" + std::string(&typeOfConstructionHeuristic, 1) + "/" + typeOfLocalSearch + 
+			   "/" + typeOfStepFunction + "/";
+	std::string filename = getFilename(instanceName);
+	int i = 0;
+	bool doesFileAlreadyExist; 
+	do {
+		i++;
+		std::string fullname = path + filename + std::to_string(i);
+		doesFileAlreadyExist = is_file_exist(fullname.c_str()); 
+	} while(doesFileAlreadyExist);
+
+	solutionWriter.write(path + filename + std::to_string(i));
+	std::cout << "Done!" << std::endl;
+
+	std::cout << std::endl;
 
 	return 0; 
 }
