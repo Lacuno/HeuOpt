@@ -42,6 +42,8 @@ class KPMPSolution {
 		std::vector<uint> getNeighbors(uint page, uint v);
 		const AdjacencyMatrix& getAdjacencyMatrix();
 
+		void printCrossingMatrix();
+
 	private:
 		uint k;
 		uint numVertices;
