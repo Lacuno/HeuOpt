@@ -14,6 +14,7 @@ file(GLOB SOURCE_FILES "src/aufgabe1/*.h"
 					   "src/aufgabe1/*.cpp" 
 					   "${CMAKE_SOURCE_DIR}/framework/*.cpp" 
 					   "${CMAKE_SOURCE_DIR}/framework/*.h")
+
 set(EX1_SOURCE ${SOURCE_FILES})
 list(REMOVE_ITEM EX1_SOURCE "${CMAKE_SOURCE_DIR}/src/aufgabe1/main.cpp")
 
@@ -22,13 +23,19 @@ file(GLOB SOURCE_FILES2 "src/aufgabe2/*.h"
 set(EX2_SOURCE ${SOURCE_FILES2})
 list(REMOVE_ITEM EX2_SOURCE "${CMAKE_SOURCE_DIR}/src/aufgabe2/main.cpp")
 
-
+file(GLOB SOURCE_FILES3 "src/aufgabe3/*.h"
+		   "src/aufgabe3/*.cpp")
+set(EX3_SOURCE ${SOURCE_FILES3})
+list(REMOVE_ITEM EX3_SOURCE "${CMAKE_SOURCE_DIR}/src/aufgabe3/main.cpp")
 
 include_directories(${CMAKE_SOURCE_DIR}/src/aufgabe1
+		    ${CMAKE_SOURCE_DIR}/src/aufgabe2
 		    ${CMAKE_SOURCE_DIR}/framework 
 	            ${Boost_INCLUDE_DIRS}
 		   )
 add_executable (heuopt_ex1 ${EX1_SOURCE} "${CMAKE_SOURCE_DIR}/src/aufgabe1/main.cpp")
 add_executable (heuopt_ex2 ${EX1_SOURCE} ${EX2_SOURCE} "${CMAKE_SOURCE_DIR}/src/aufgabe2/main.cpp")
+add_executable (heuopt_ex3 ${EX1_SOURCE} ${EX2_SOURCE} ${EX3_SOURCE} "${CMAKE_SOURCE_DIR}/src/aufgabe3/main.cpp")
 target_link_libraries(heuopt_ex1 ${Boost_LIBRARIES})
 target_link_libraries(heuopt_ex2 ${Boost_LIBRARIES})
+target_link_libraries(heuopt_ex3 ${Boost_LIBRARIES})

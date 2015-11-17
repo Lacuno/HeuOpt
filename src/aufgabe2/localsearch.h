@@ -17,4 +17,10 @@ class LocalSearch {
 	uint timeLimitSec;
 };
 
+struct LocalSearchBundle {
+	std::shared_ptr<LocalSearch> localSearch;
+	std::shared_ptr<Neighborhood> neighborhood;
+	StepFunction stepFunction;
+};
+
 #endif /* LOCAL_SEARCH_H */
