@@ -59,8 +59,6 @@ bool MinMaxCrossingOrderingNeighborhood::hasNextNeighbor() {
 
 shared_ptr<KPMPSolution> MinMaxCrossingOrderingNeighborhood::nextNeighbor() {
 
-	shared_ptr<KPMPSolution> neighbor = shared_ptr<KPMPSolution>(new KPMPSolution(currentSolution));
-
 	if (!firstIteration) {
 
 		if (currentPage + 1 < currentSolution->getK()) {
@@ -106,10 +104,16 @@ shared_ptr<KPMPSolution> MinMaxCrossingOrderingNeighborhood::nextNeighbor() {
 		std::swap(minV1, minV2);
 	}
 
-	neighbor->shiftOrdering(maxEdge.v1, minV1);
-	neighbor->shiftOrdering(maxEdge.v2, minV2);
+	if (currentSolution->shiftOrderingCrossings(maxEdge.v1, minV1) + currentSolution->shiftOrderingCrossings(maxEdge.v2, minV2) < 0) {
+		shared_ptr<KPMPSolution> neighbor = shared_ptr<KPMPSolution>(new KPMPSolution(currentSolution));
 
-	return neighbor;
+		neighbor->shiftOrdering(maxEdge.v1, minV1);
+		neighbor->shiftOrdering(maxEdge.v2, minV2);
+
+		return neighbor;
+	}
+
+	return currentSolution;
 }
 
 void MinMaxCrossingOrderingNeighborhood::setCurrentSolution(shared_ptr<KPMPSolution> newSolution) {

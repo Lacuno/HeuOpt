@@ -21,8 +21,7 @@ shared_ptr<KPMPSolution> MaxCrossingPageNeighborhood::randomNeighbor() {
 	// add the edge on a new page
 	if (maxEdge.page != p) {
 		//std::cout << "moving edge " << edge.v1 << ", " << edge.v2 << " from page " << edge.page << " to " << currentPage << std::endl;
-		neighbor->removeEdge(maxEdge);
-		neighbor->addEdge({ maxEdge.v1, maxEdge.v2, p });
+		neighbor->moveEdge(maxEdge, p);
 	}
 
 	return neighbor;
@@ -50,8 +49,6 @@ bool MaxCrossingPageNeighborhood::hasNextNeighbor() {
 
 shared_ptr<KPMPSolution> MaxCrossingPageNeighborhood::nextNeighbor() {
 
-	shared_ptr<KPMPSolution> neighbor = shared_ptr<KPMPSolution>(new KPMPSolution(currentSolution));
-
 	if (!firstIteration) {
 
 		if (currentPage + 1 < currentSolution->getK()) {
@@ -71,13 +68,16 @@ shared_ptr<KPMPSolution> MaxCrossingPageNeighborhood::nextNeighbor() {
 	const Edge& maxEdge = maxCrossingsEdges[currentMaxIdx];
 
 	// add the edge on a new page
-	if (maxEdge.page != currentPage) {
-		//std::cout << "moving edge " << edge.v1 << ", " << edge.v2 << " from page " << edge.page << " to " << currentPage << std::endl;
-		neighbor->removeEdge(maxEdge);
-		neighbor->addEdge({ maxEdge.v1, maxEdge.v2, currentPage });
+	if (maxEdge.page != currentPage && currentSolution->moveEdgeCrossings(maxEdge, currentPage) < 0) {
+		
+		shared_ptr<KPMPSolution> neighbor = shared_ptr<KPMPSolution>(new KPMPSolution(currentSolution));
+
+		neighbor->moveEdge(maxEdge, currentPage);
+
+		return neighbor;
 	}
 
-	return neighbor;
+	return currentSolution;
 }
 
 void MaxCrossingPageNeighborhood::setCurrentSolution(shared_ptr<KPMPSolution> newSolution) {

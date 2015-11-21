@@ -24,7 +24,7 @@ class EdgeShiftNeighborhood : public Neighborhood {
 	uint currentEdgeV1;
 	uint currentEdgeV2;
 
-	std::shared_ptr<KPMPSolution> generateNewNeighbor(uint shiftToPage, Edge& edge);
+	std::shared_ptr<KPMPSolution> generateNewNeighbor(uint shiftToPage, Edge& edge, bool forceNewSolution = false);
 };
 
 #endif /* EDGE_SHIFT_NEIGHBORHOOD_H*/

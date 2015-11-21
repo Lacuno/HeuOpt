@@ -31,8 +31,15 @@ bool OrderingShiftNeighborhood::hasNextNeighbor() {
 
 shared_ptr<KPMPSolution> OrderingShiftNeighborhood::nextNeighbor() {
 
-	shared_ptr<KPMPSolution> neighbor = shared_ptr<KPMPSolution>(new KPMPSolution(currentSolution));
-	neighbor->shiftOrdering(currentPos, shiftTo);
+	shared_ptr<KPMPSolution> neighbor;
+
+	if (currentSolution->shiftOrderingCrossings(currentPos, shiftTo) < 0) {
+		neighbor = shared_ptr<KPMPSolution>(new KPMPSolution(currentSolution));
+		neighbor->shiftOrdering(currentPos, shiftTo);
+	}
+	else {
+		neighbor = currentSolution;
+	}
 
 	// Next neighbor
 	uint orderingSize = currentSolution->getNumVertices(); 

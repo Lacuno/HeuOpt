@@ -27,7 +27,7 @@ shared_ptr<KPMPSolution> EdgeShiftNeighborhood::randomNeighbor() {
 	}
 
 	Edge e = {v1, v2, page};
-	shared_ptr<KPMPSolution> neighbor = generateNewNeighbor(shiftToPage, e);
+	shared_ptr<KPMPSolution> neighbor = generateNewNeighbor(shiftToPage, e, true);
 	return neighbor;
 }
 
@@ -103,14 +103,17 @@ void EdgeShiftNeighborhood::setCurrentSolution(shared_ptr<KPMPSolution> newSolut
 	distribution = uniform_int_distribution<uint>(0, newSolution->getNumVertices()-1);
 }
 
-shared_ptr<KPMPSolution> EdgeShiftNeighborhood::generateNewNeighbor(uint shiftToPage, Edge& edge) {
+shared_ptr<KPMPSolution> EdgeShiftNeighborhood::generateNewNeighbor(uint shiftToPage, Edge& edge, bool forceNewSolution) {
 
-	shared_ptr<KPMPSolution> neighbor = shared_ptr<KPMPSolution>(new KPMPSolution(currentSolution));
-	neighbor->removeEdge(edge);
-	edge.page = shiftToPage;
-	neighbor->addEdge(edge);	
+	if (forceNewSolution || currentSolution->moveEdgeCrossings(edge, shiftToPage) < 0) {
+		shared_ptr<KPMPSolution> neighbor = shared_ptr<KPMPSolution>(new KPMPSolution(currentSolution));
 
-	return neighbor;
+		neighbor->moveEdge(edge, shiftToPage);
+
+		return neighbor;
+	}
+
+	return currentSolution;
 }
 
 shared_ptr<Neighborhood> EdgeShiftNeighborhood::clone() {
