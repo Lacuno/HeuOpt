@@ -14,15 +14,17 @@
 #include "edgeshiftneighborhood.h"
 #include "maxcrossingpageneighborhood.h"
 #include "minmaxcrossingorderingneighborhood.h"
+#include "variableneighborhooddescent.h"
+#include "variableneighborhoodsearch.h"
 #include "utils.h"
 
 void usage() {
-	std::cout << "Usage: ./heuOpt -c {g | o} [-r] -l {sho | moe | map | mmc} -s {f | b | r} -i <instance-name>" << std::endl;
+	std::cout << "Usage: ./heuOpt -c {g | o} [-r] {-l {sho | moe | map | mmc} -s {f | b | r}}* -i <instance-name>" << std::endl;
 	std::cout << "-c: Build with construction heuristic " << std::endl;
 	std::cout << "    option g: Greedy construction heuristic" << std::endl;
 	std::cout << "    option o: Ordering construction heuristic (Randomization is not supported yet)" << std::endl;
 	std::cout << "-r: Randomize construction heuristic" << std::endl;
-	std::cout << "-l: Improve with local search" << std::endl;
+	std::cout << "-l: Improve with local search. Can be specified multiple times to perform a vnd search" << std::endl;
 	std::cout << "    option sho: Shift ordering neighborhood" << std::endl;
 	std::cout << "    option moe: move edge to other page neighborhood" << std::endl;
 	std::cout << "    option map: move max crossing edges to other pages" << std::endl;
@@ -33,6 +35,7 @@ void usage() {
 	std::cout << "    option f: Random strategy" << std::endl;
 	std::cout << "-i: Specify the instance you want the algorithm to run on" << std::endl;
 	std::cout << "    Default is automatic-6" << std::endl;
+	std::cout << "-v: If -l was chosen multiple times, perform a VNS instead of a VND" << std::endl;
 }
 
 bool is_file_exist(const char *fileName)
@@ -52,16 +55,16 @@ int main(int argc, char** argv)
 	namespace po = boost::program_options;	
 
 	po::options_description desc("Arguments");
+	std::vector<std::string> neighborhoods;
+	std::vector<char> stepFunctions;
 	desc.add_options()
-		("help,h", "Usage: ./heuOpt -c {g | o} [-r] -l {sho}")
-		(",c", po::value<char>(), "Build with construction heuristic: "
-								 "option g : Greedy construction heuristic"
-								 "option o : Ordering construction heuristic(Randomization is not supported yet)")
+		("help,h", "Usage")
+		(",c", po::value<char>(), "Build with construction heuristic")
 		(",r", "Randomize construction heuristic")
-		(",l", po::value<std::string>(), "Improve with local search"
-		      				"option sho: Shift ordering neighborhood")
-		(",s", po::value<char>())
-		(",i", po::value<std::string>());
+		(",l", po::value<std::vector<string>>(&neighborhoods), "Improve with local search")
+		(",s", po::value<std::vector<char>>(&stepFunctions), "Defines the step function for the local search")
+		(",i", po::value<std::string>(), "Defines the instance that will be used")
+		(",v", "Tags the search as VNS search");
 	po::variables_map vm;
 	try {
 		po::store(po::parse_command_line(argc, argv, desc), vm);
@@ -78,10 +81,15 @@ int main(int argc, char** argv)
 
 	bool randomize = vm.count("-r");
 	char typeOfConstructionHeuristic = vm.count("-c") ? vm["-c"].as<char>() : ' ';
-	std::string typeOfLocalSearch = vm.count("-l") ? vm["-l"].as<std::string>() : "";
-	char typeOfStepFunction = vm.count("-s") ? vm["-s"].as<char>() : ' ';
+//	std::string typeOfLocalSearch = vm.count("-l") ? vm["-l"].as<std::string>() : "";
+//	char typeOfStepFunction = vm.count("-s") ? vm["-s"].as<char>() : ' ';
 	std::string instanceName = vm.count("-i") ? vm["-i"].as<std::string>() : "instances/automatic-6.txt";
+	bool vns = vm.count("-v");
 
+	if(neighborhoods.size() == 0) {
+		usage();
+		return -1;
+	}
 
 	std::shared_ptr<ConstructionHeuristic> constructor;
 	switch (typeOfConstructionHeuristic) {
@@ -89,42 +97,71 @@ int main(int argc, char** argv)
 		break;
 	case 'o': constructor = std::shared_ptr<ConstructionHeuristic>(new OrderingConstruction(randomize));
 		break;
-	default:  usage();
+	default: 
+		  cout << typeOfConstructionHeuristic << " aaaaaaa" << endl;
+		cout << "Test" << endl;
+		  usage();
 		return -1;
 	}
 
-	std::shared_ptr<LocalSearch> improver = std::shared_ptr<LocalSearch>(new LocalSearch(14, 0));	
-	std::shared_ptr<Neighborhood> neighborhood;
-	if(typeOfLocalSearch == "sho") {
-		neighborhood = std::shared_ptr<Neighborhood>(new OrderingShiftNeighborhood());
-	} else if(typeOfLocalSearch == "moe") {
-		neighborhood = std::shared_ptr<Neighborhood>(new EdgeShiftNeighborhood());
-	} else if (typeOfLocalSearch == "map") {
-		neighborhood = std::shared_ptr<Neighborhood>(new MaxCrossingPageNeighborhood());
-	} else if (typeOfLocalSearch == "mmc") {
-		neighborhood = std::shared_ptr<Neighborhood>(new MinMaxCrossingOrderingNeighborhood());
-	} else {
-		usage();
-		return -1;
-	}
+	std::vector<LocalSearchBundle> localSearches;
+	for(uint i = 0; i < neighborhoods.size(); i++) {
+		std::shared_ptr<LocalSearch> localSearch = std::shared_ptr<LocalSearch>(new LocalSearch(14, 0));	
+		std::shared_ptr<Neighborhood> neighborhood;
 
-	StepFunction stepFunction;
-	switch(typeOfStepFunction) {
-		case 'f': stepFunction = FIRST_IMPROVEMENT;
-			  break;
-		case 'b': stepFunction = BEST_IMPROVEMENT;
-			  break;
-		case 'r': stepFunction = RANDOM;
-			  break;
-		default:  usage();
-			  return -1;
+		std::string neighborhoodParam = neighborhoods[i];
+		if(neighborhoodParam == "sho") {
+			neighborhood = std::shared_ptr<Neighborhood>(new OrderingShiftNeighborhood());
+		} else if(neighborhoodParam == "moe") {
+			neighborhood = std::shared_ptr<Neighborhood>(new EdgeShiftNeighborhood());
+		} else if (neighborhoodParam == "map") {
+			neighborhood = std::shared_ptr<Neighborhood>(new MaxCrossingPageNeighborhood());
+		} else if (neighborhoodParam == "mmc") {
+			neighborhood = std::shared_ptr<Neighborhood>(new MinMaxCrossingOrderingNeighborhood());
+		} else {
+			usage();
+			return -1;
+		}
+
+		StepFunction stepFunction;
+		switch(stepFunctions[i]) {
+			case 'f': stepFunction = FIRST_IMPROVEMENT;
+				  break;
+			case 'b': stepFunction = BEST_IMPROVEMENT;
+				  break;
+			case 'r': stepFunction = RANDOM;
+				  break;
+			default:  usage();
+				  return -1;
+		}
+
+		LocalSearchBundle lsb;
+		lsb.localSearch = localSearch;
+		lsb.neighborhood= neighborhood;
+		lsb.stepFunction= stepFunction;
+		localSearches.push_back(lsb);
 	}
 
 	// Algorithm
 	const auto& sol = constructor->construct(instanceName);
+	for(LocalSearchBundle lsb : localSearches) {
+		lsb.neighborhood->setCurrentSolution(sol);
+	}
 
-	neighborhood->setCurrentSolution(sol);
-	auto newsol = improver->improve(sol, neighborhood, stepFunction);
+	std::shared_ptr<KPMPSolution> newsol;
+	if(localSearches.size() == 1) {
+		std::cout << "Using Local Search for improvement!" << std::endl;
+		newsol = localSearches[0].localSearch->improve(sol, localSearches[0].neighborhood, localSearches[0].stepFunction);
+	} else if(!vns) {
+		std::cout << "Using VND for improvement!" << std::endl;
+		VariableNeighborhoodDescent vnd(sol);
+		newsol = vnd.improve(localSearches);
+	} else {
+		std::cout << "Using VNS for improvement!" << std::endl;
+		VariableNeighborhoodSearch vns(sol);
+		newsol = vns.improve(localSearches);
+	}
+
 	std::cout << "Num Crossings: " << newsol->getCrossings() << std::endl;
 
 	// write solution                                             
@@ -136,18 +173,8 @@ int main(int argc, char** argv)
 	for (const auto& edge : edges) {
 		solutionWriter.addEdgeOnPage(edge.v1, edge.v2, edge.page);
 	}
-	std::string path = "instances/result/" + std::string(&typeOfConstructionHeuristic, 1) + "/" + typeOfLocalSearch + 
-			   "/" + typeOfStepFunction + "/";
-	std::string filename = getFilename(instanceName);
-	int i = 0;
-	bool doesFileAlreadyExist; 
-	do {
-		i++;
-		std::string fullname = path + filename + std::to_string(i);
-		doesFileAlreadyExist = is_file_exist(fullname.c_str()); 
-	} while(doesFileAlreadyExist);
-
-	solutionWriter.write(path + filename + std::to_string(i));
+	std::string path = "instances/result/" + getFilename(instanceName);
+	solutionWriter.write(path);
 	std::cout << "Done!" << std::endl;
 
 	std::cout << std::endl;

@@ -1,4 +1,5 @@
 #include "variableneighborhooddescent.h"
+#include <iostream>
 
 using namespace std;
 
@@ -10,6 +11,8 @@ shared_ptr<KPMPSolution> VariableNeighborhoodDescent::improve(vector<LocalSearch
 	uint i = 0;
 
 	while(i < localSearchBundles.size()) {
+		cout << "VND ITERATION using neighborhood " << i << endl;
+		
 		shared_ptr<LocalSearch> chosenLocalSearch = localSearchBundles[i].localSearch;
 		shared_ptr<KPMPSolution> betterSolution = chosenLocalSearch->improve(bestSolutionFound, localSearchBundles[i].neighborhood, localSearchBundles[i].stepFunction);
 
