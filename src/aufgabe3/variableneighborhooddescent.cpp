@@ -14,6 +14,7 @@ shared_ptr<KPMPSolution> VariableNeighborhoodDescent::improve(vector<LocalSearch
 		cout << "VND ITERATION using neighborhood " << i << endl;
 		
 		shared_ptr<LocalSearch> chosenLocalSearch = localSearchBundles[i].localSearch;
+		localSearchBundles[i].neighborhood->setCurrentSolution(bestSolutionFound);
 		shared_ptr<KPMPSolution> betterSolution = chosenLocalSearch->improve(bestSolutionFound, localSearchBundles[i].neighborhood, localSearchBundles[i].stepFunction);
 
 		if(betterSolution->getCrossings() < bestSolutionFound->getCrossings()) {

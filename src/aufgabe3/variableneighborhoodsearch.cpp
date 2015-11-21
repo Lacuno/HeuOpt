@@ -18,7 +18,7 @@ shared_ptr<KPMPSolution> VariableNeighborhoodSearch::improve(vector<LocalSearchB
 	}
 
 	// TODO: Define better stopping criteria
-	for(uint stoppingCriteria = 0; stoppingCriteria < 100; stoppingCriteria++) {
+	for(uint stoppingCriteria = 0; stoppingCriteria < 5; stoppingCriteria++) {
 		uint k = 0; 	// Neighborhood used for shaking
 		while(k < localSearches.size()) {
 			// Shaking
