@@ -97,6 +97,25 @@ void KPMPSolution::KPMPSolution::removeEdge(Edge e) {
 	vertices2.erase(std::remove_if(vertices2.begin(), vertices2.end(), [&](uint const &v) { return v == ordering[e.v1]; }), vertices2.end());
 }
 
+void KPMPSolution::moveEdge(Edge e, uint page) {
+	removeEdge(e);
+	addEdge({ e.v1, e.v2, page });
+}
+
+int KPMPSolution::moveEdgeCrossings(Edge e, uint page) {
+	// does edge exist?
+	if (adjacencyMatrix[e.v1][e.v2] != e.page)
+		throw std::invalid_argument("edge does not exist!");
+
+	if (e.page == page)
+		return 0;
+
+	uint oldCrossings = getEdgeCrossings(e);
+	uint newCrossings = getEdgeCrossings({ e.v1, e.v2, page });
+
+	return newCrossings - oldCrossings;
+}
+
 std::vector<Edge> KPMPSolution::getEdges()
 {
 	std::vector<Edge> edges;
@@ -134,6 +153,9 @@ void KPMPSolution::setOrdering(std::vector<uint> newOrdering) {
 void KPMPSolution::shiftOrdering(uint elementToMove, uint shift) {
 	uint idx = ordering[elementToMove];
 
+	if (idx == shift)
+		return;
+
 	// remove the crossings from the old neighbors
 	for (uint p = 0; p < k; p++) {
 		for (uint n : adjacencyLists[p][elementToMove]) {
@@ -156,6 +178,50 @@ void KPMPSolution::shiftOrdering(uint elementToMove, uint shift) {
 			updateEdgeCrossings({ elementToMove , orderingInv[n], p }, 1);
 		}
 	}
+}
+
+int KPMPSolution::shiftOrderingCrossings(uint elementToMove, uint shift) {
+	uint idx = ordering[elementToMove];
+	
+	if (idx == shift)
+		return 0;
+
+	uint oldCrossings = 0;
+	uint newCrossings = 0;
+
+	// count crossings from the old neighbors
+	for (uint p = 0; p < k; p++) {
+		for (uint n : adjacencyLists[p][elementToMove]) {
+			// update crossings
+			oldCrossings += getEdgeCrossings({ elementToMove , orderingInv[n], p });
+		}
+	}
+
+	// update ordering
+	orderingInv.erase(orderingInv.begin() + idx);
+	orderingInv.insert(orderingInv.begin() + shift, elementToMove);
+
+	for (uint i = 0; i < ordering.size(); i++) {
+		ordering[orderingInv[i]] = i;
+	}
+
+	// add the crossings from the new neighbors
+	for (uint p = 0; p < k; p++) {
+		for (uint n : adjacencyLists[p][elementToMove]) {
+			// we don't use getEdgeCrossings here because it lookups in the crossingsMatrix, which is NOT updated
+			newCrossings += updateEdgeCrossings({ elementToMove , orderingInv[n], p }, 0);
+		}
+	}
+
+	// restore ordering and orderingInv
+	orderingInv.erase(orderingInv.begin() + shift);
+	orderingInv.insert(orderingInv.begin() + idx, elementToMove);
+
+	for (uint i = 0; i < ordering.size(); i++) {
+		ordering[orderingInv[i]] = i;
+	}
+
+	return newCrossings - oldCrossings;
 }
 
 uint KPMPSolution::getPositionInOrdering(uint v) {
@@ -215,7 +281,7 @@ uint KPMPSolution::getCrossings() {
 
 uint KPMPSolution::getEdgeCrossings(Edge e) {
 	// is the edge already in our solution - return the crossings matrix
-	if (adjacencyMatrix[e.v1][e.v2] >= 0)
+	if (adjacencyMatrix[e.v1][e.v2] == e.page)
 		return crossingsMatrix[e.v1][e.v2];
 	
 	// otherwise we use the updateEdgeCrossings function without changing the counter
