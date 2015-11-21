@@ -18,6 +18,16 @@ struct Edge {
 	uint page;
 };
 
+/**
+* Change Ordering:
+* - use shiftOrderingCrossings to determine the change in crossings of a shifted ordering
+* - use shiftOrdering to perform an ordering shift
+*
+* Move Edge:
+* - use moveEdgeCrossings to determine the change in crossings of a moved edge
+* - use moveEdge to perform an edge move
+*/
+
 class KPMPSolution {
     public:
 		KPMPSolution(uint k, uint numVertices);
@@ -28,12 +38,15 @@ class KPMPSolution {
 
 		void addEdge(Edge e);
 		void removeEdge(Edge e);
+		void moveEdge(Edge e, uint page);
+		int moveEdgeCrossings(Edge e, uint page);
 		std::vector<Edge> getEdges();
 		int getPageForEdge(uint v1, uint v2); // -1 if edge not found
 		
 		const std::vector<uint>& getOrdering();
 		void setOrdering(std::vector<uint> newOrdering);
 		void shiftOrdering(uint elementToMove, uint shift);
+		int shiftOrderingCrossings(uint elementToMove, uint shift);
 		uint getPositionInOrdering(uint v);
 
 		void recomputeCrossings();
