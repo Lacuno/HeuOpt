@@ -2,6 +2,7 @@
 #include <memory>
 #include <boost/program_options.hpp>
 #include <boost/filesystem.hpp>
+#include <chrono>
 #include "kpmp_instance.h"
 #include "kpmp_solution.h"
 #include "kpmp_solution_writer.h"
@@ -142,6 +143,9 @@ int main(int argc, char** argv)
 		localSearches.push_back(lsb);
 	}
 
+	// start time measurment
+	auto now = chrono::high_resolution_clock::now();
+
 	// Algorithm
 	const auto& sol = constructor->construct(instanceName);
 	for(LocalSearchBundle lsb : localSearches) {
@@ -162,7 +166,11 @@ int main(int argc, char** argv)
 		newsol = vns.improve(localSearches);
 	}
 
-	std::cout << "Num Crossings: " << newsol->getCrossings() << std::endl;
+	// end time measurement
+	auto difference = std::chrono::duration_cast<std::chrono::microseconds>(chrono::high_resolution_clock::now() - now).count();
+	std::cout << "Done in " << difference/1000.0 << std::endl;
+
+	std::cout << "Improved Crossings: " << newsol->getCrossings() << std::endl;
 
 	// write solution                                             
 	KPMPSolutionWriter solutionWriter(newsol->getK());
@@ -173,7 +181,7 @@ int main(int argc, char** argv)
 	for (const auto& edge : edges) {
 		solutionWriter.addEdgeOnPage(edge.v1, edge.v2, edge.page);
 	}
-	std::string path = "instances/result/" + getFilename(instanceName);
+	std::string path = "result_" + getFilename(instanceName);
 	solutionWriter.write(path);
 	std::cout << "Done!" << std::endl;
 

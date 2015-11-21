@@ -1,9 +1,11 @@
 #include "neighborhood.h"
 #include <iostream>
+#include <ctime>
 
 using namespace std;
 
 Neighborhood::Neighborhood() {
+	rng.seed(std::time(0));
 }
 
 shared_ptr<KPMPSolution> Neighborhood::firstImprovement() {
