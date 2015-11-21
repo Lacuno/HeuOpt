@@ -119,3 +119,7 @@ void MaxCrossingPageNeighborhood::setCurrentSolution(shared_ptr<KPMPSolution> ne
 	// Reinitialze Random Number Generator
 	distribution = uniform_int_distribution<uint>(0, newSolution->getNumVertices() * newSolution->getNumVertices());
 }
+
+shared_ptr<Neighborhood> MaxCrossingPageNeighborhood::clone() {
+	return shared_ptr<Neighborhood>(new MaxCrossingPageNeighborhood(*this));
+}

@@ -113,3 +113,6 @@ shared_ptr<KPMPSolution> EdgeShiftNeighborhood::generateNewNeighbor(uint shiftTo
 	return neighbor;
 }
 
+shared_ptr<Neighborhood> EdgeShiftNeighborhood::clone() {
+	return shared_ptr<Neighborhood>(new EdgeShiftNeighborhood(*this));
+}

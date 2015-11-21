@@ -15,6 +15,8 @@ class Neighborhood {
 	virtual void setCurrentSolution(std::shared_ptr<KPMPSolution>);
 	virtual std::shared_ptr<KPMPSolution> randomNeighbor() = 0;
 
+	virtual std::shared_ptr<Neighborhood> clone() = 0;
+
     protected:
 	std::shared_ptr<KPMPSolution> currentSolution;
 	std::default_random_engine rng;

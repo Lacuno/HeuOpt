@@ -12,6 +12,8 @@ class EdgeShiftNeighborhood : public Neighborhood {
 	virtual std::shared_ptr<KPMPSolution> randomNeighbor();
 	virtual void setCurrentSolution(std::shared_ptr<KPMPSolution> newSolution);
 
+	virtual std::shared_ptr<Neighborhood> clone();
+
     protected:
 	virtual bool hasNextNeighbor();
 	virtual std::shared_ptr<KPMPSolution> nextNeighbor();

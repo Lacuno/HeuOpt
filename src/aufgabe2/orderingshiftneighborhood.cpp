@@ -55,3 +55,7 @@ void OrderingShiftNeighborhood::setCurrentSolution(shared_ptr<KPMPSolution> newS
 	// Reinitialze Random Number Generator
 	distribution = uniform_int_distribution<uint>(0, newSolution->getOrdering().size()-1);
 }
+
+shared_ptr<Neighborhood> OrderingShiftNeighborhood::clone() {
+	return shared_ptr<Neighborhood>(new OrderingShiftNeighborhood(*this));
+}

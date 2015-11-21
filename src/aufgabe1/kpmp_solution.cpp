@@ -215,7 +215,7 @@ uint KPMPSolution::getCrossings() {
 
 uint KPMPSolution::getEdgeCrossings(Edge e) {
 	// is the edge already in our solution - return the crossings matrix
-	if (adjacencyMatrix[e.v1][e.v2] >= 0)
+	if (adjacencyMatrix[e.v1][e.v2] == e.page)
 		return crossingsMatrix[e.v1][e.v2];
 	
 	// otherwise we use the updateEdgeCrossings function without changing the counter

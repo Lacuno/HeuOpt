@@ -162,3 +162,7 @@ void MinMaxCrossingOrderingNeighborhood::setCurrentSolution(shared_ptr<KPMPSolut
 	// Reinitialze Random Number Generator
 	distribution = uniform_int_distribution<uint>(0, newSolution->getNumVertices() * newSolution->getNumVertices());
 }
+
+shared_ptr<Neighborhood> MinMaxCrossingOrderingNeighborhood::clone() {
+	return shared_ptr<Neighborhood>(new MinMaxCrossingOrderingNeighborhood(*this));
+}
