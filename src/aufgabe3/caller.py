@@ -4,6 +4,7 @@ from subprocess import Popen, PIPE
 import sys
 import math
 import shutil
+import os
 import threading
 
 instances = [
@@ -19,27 +20,47 @@ instances = [
 	"automatic-10.txt",
 ]
 
+timeout = 15*60
+
 global_best_solutions = {}
 
 def executeHeuOpt(args):
 	argList = ["./heuopt_ex3.exe"]
 	argList.extend(args)
 	
-	crossing = 0
-	time = 0
+	def kill( p ):
+		if p.poll() is None:
+			try:
+				p.kill()
+				print 'Error: process taking too long to complete--terminating'
+			except OSError as e:
+				if e.errno != errno.ESRCH:
+					return
+			
+	crossing = sys.maxint
+	time = None
 		
 	process = Popen(argList, stdout=PIPE)
+	
+	t = threading.Timer( timeout, kill, [process] )
+	t.start()
+
 	(output, err) = process.communicate()
 	exit_code = process.wait()
+	t.cancel()
 
 	lines = output.split('\n')
 		
 	for line in lines:
-		if "Improved Crossings" in line:
-			crossing = int(line[20:])
+		if "Improved Obj:" in line:
+			crossing = min(crossing, int(line[13:]))
 				
 		if "Done in" in line:
 			time = float(line[8:-1])
+	
+	
+	if not time:
+		time = timeout * 1000
 	
 	return (crossing, time)
 
@@ -55,7 +76,8 @@ def run(args):
 		
 		if instance not in global_best_solutions or global_best_solutions[instance] > crossings:
 			global_best_solutions[instance] = crossings
-			shutil.copy("result_" + instance, "best_result_" + instance)
+			if os.path.exists("result_" + instance):
+				shutil.copy("result_" + instance, "best_result_" + instance)
 		
 		print(instance + " & %d & %.2f ms \\\\" % (crossing, time))
 
@@ -76,7 +98,8 @@ def run_random(args, numRuns):
 			
 			if instance not in global_best_solutions or global_best_solutions[instance] > crossing:
 				global_best_solutions[instance] = crossing
-				shutil.copy("result_" + instance, "best_result_" + instance)
+				if os.path.exists("result_" + instance):
+					shutil.copy("result_" + instance, "best_result_" + instance)
 
 			#else:
 			#	print("crossings {} not better than {}!".format(crossings, global_best_solutions[instance]))
@@ -95,5 +118,5 @@ def run_random(args, numRuns):
 
 
 #run(["-c", "g", "-l", "mmc", "-s" "f"])
-#run_random(["-c", "g", "-v", "-l", "mmc", "-s", "r", "-l", "mmc", "-s", "r", "-l", "sho", "-s", "r", "-l", "moe", "-s", "r"], 100)
+run_random(["-c", "g", "-v", "-l", "mmc", "-s", "r", "-l", "map", "-s", "r"], 1)
 
