@@ -4,6 +4,7 @@
 \usepackage{listings}
 \usepackage{pdfpages}
 \usepackage{rotating}
+\usepackage{graphicx}
 \usepackage{lscape}
 \usepackage{subcaption}
 \usepackage[normalem]{ulem}
@@ -27,21 +28,21 @@
  
 %--------------------Begin Outline
 \section{Advanced Local Search Description}
-We implemented a \textit{General Variable Neighbourhood Search} based on our four neighbourhoods from assignment 2, namely Ordering 1-shift (\textit{sho}), Shift Edges (\textit{moe}), 
-Max-Crossing Neighbourhood (\textit{map}) and Min-Max-crossing ordering (\textit{mmc}).
-For a neighbourhood description please look report-2.
+We implemented a \textit{General Variable Neighbourhood Search} based on our four neighbourhoods from assignment 2, namely Ordering 1-Shift (\textit{sho}), Shift Edges (\textit{moe}), 
+Max-Crossing Neighbourhood (\textit{map}) and Min-Max-Crossing Ordering (\textit{mmc}).
+For a neighbourhood description see report-2.
 
-Our previous approach of computing the number of crossings was a little bit inefficient: To create a neighbour we copied the old solution, made a change to generate a neighbour and finally used delta evaluation to compute the number of crossings in a fast way.
-However copying the solution was not so fast and we spent a lot of time recreating our approach.
-Now solutions are only copied when a better neighbour was found and we experienced a speedup of roughly $4$ for our neighbourhoods.
+Our previous approach of computing the number of crossings was rather inefficient: To create a neighbour, we copied the old solution, made a change to generate a new neighbour and finally used delta evaluation to compute the number of crossings in a fast way.
+However, generating a neighbour by copying a solution is computational expensive. Hence, we only copy solutions, if a better neighbour was found which increased the performance by roughly $4$ times.
+
 In that way we were able to run Variable Neighbourhood Searches in the given time frame.
 
-From the theory we expected the results to be different, when using the same neighbourhoods but in a different order on the same problem.
+From theory we expected varying results, when using different orders for the same neighbourhoods.
 We were able to confirm this statement empirically.
 On each instance we experienced the best results when using a neighbourhood that shifts edges to another page and then improving the ordering (See Appendix for a graphical view).
 
 \section{Experimental Setup}
-We tested our program on our local computer because in this assignment we used cmake for crossplattform development and the boost library.
+We tested our program on our local computer because in this assignment we used cmake for cross-platform development and the boost library.
 The needed tools were not installed on Eowyn nor Behemoth therefore we decided to test our application on our computers.
 The test environment for the results are a Intel Core i7-2600K processor on Ubuntu 15.10.
 Our code is written in C++11 and it was compiled with gcc 5.2.1.
@@ -135,9 +136,59 @@ automatic-10.txt & 22182    & 22375.33   & 270.59      & 900000.00 ms & 0.00 ms 
 
 \section{Appendix}
 We also provide some additional figures for a better visual representation.
-The following ten figure show the mean objective function on the left side (including std-dev for randomized runs) and the run time in form of pie charts on the right side respectiveley..
+The following ten figure show the mean objective function on the left side (including std-dev for randomized runs) and the run time in form of pie charts on the right side respectively..
 
-\includepdfmerge[nup=1x2,delta=0 1cm]{instance1.pdf,instance2.pdf,instance3.pdf,instance4.pdf,instance5.pdf,instance6.pdf,instance7.pdf,instance8.pdf,instance9.pdf,instance10.pdf}
+\newpage
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.8\textwidth]{instance1}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.8\textwidth]{instance2}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.8\textwidth]{instance3}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.8\textwidth]{instance4}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.8\textwidth]{instance5}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.8\textwidth]{instance6}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.8\textwidth]{instance7}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.8\textwidth]{instance8}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.8\textwidth]{instance9}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.8\textwidth]{instance10}
+\end{figure}
 
 \end{document}
 
